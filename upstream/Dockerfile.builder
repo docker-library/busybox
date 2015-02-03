@@ -29,5 +29,3 @@ RUN set -x \
 	&& mkdir -p rootfs-bin \
 	&& ln busybox rootfs-bin/ \
 	&& rootfs-bin/busybox --install rootfs-bin
-
-CMD ["./busybox"]
