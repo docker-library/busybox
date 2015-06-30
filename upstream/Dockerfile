@@ -1,3 +1,3 @@
 FROM scratch
-ADD busybox.tar.xz /bin
+ADD busybox.tar.xz /
 CMD ["sh"]

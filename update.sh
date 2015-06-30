@@ -7,4 +7,4 @@ fullVersion="$(curl -sSL --compressed 'http://busybox.net/downloads/' | grep -E 
 
 set -x
 sed -ri 's/^(ENV BUSYBOX_VERSION) .*/\1 '"$fullVersion"'/;' upstream/Dockerfile.builder
-./make.sh
+#./make.sh
