@@ -1,0 +1,3 @@
+- getconf (http://lists.busybox.net/pipermail/busybox/2014-August/081316.html)
+- iptables-xml ?
+- ldd
