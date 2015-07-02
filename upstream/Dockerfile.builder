@@ -39,10 +39,12 @@ RUN set -x \
 
 RUN confs=' \
 		BR2_TOOLCHAIN_BUILDROOT_INET_RPC \
+		BR2_STATIC_LIBS \
 	' \
 	&& set -xe \
 	&& cd /usr/src/buildroot \
 	&& make defconfig \
+	&& sed -i 's!^BR2_SHARED_LIBS=y!# BR2_SHARED_LIBS is not set!' .config \
 	&& for conf in $confs; do \
 		sed -i "s!^# $conf is not set\$!$conf=y!" .config; \
 		grep -q "^$conf=y" .config || echo "$conf=y" >> .config; \
@@ -95,10 +97,12 @@ RUN set -x \
 			CROSS_COMPILE="$(basename /usr/src/buildroot/output/host/usr/*-buildroot-linux-uclibc)-" \
 	&& mkdir -p rootfs/bin \
 	&& ln -v busybox rootfs/bin/ \
-	&& rootfs/bin/busybox --install rootfs/bin
+	&& rootfs/bin/busybox --install rootfs/bin \
+	&& ln -v ../buildroot/output/target/usr/bin/getconf rootfs/bin/
 
 RUN mkdir -p rootfs/etc \
 	&& ln -v \
 		/usr/src/buildroot/system/skeleton/etc/passwd \
 		/usr/src/buildroot/system/skeleton/etc/shadow \
+		/usr/src/buildroot/system/skeleton/etc/group \
 		rootfs/etc/

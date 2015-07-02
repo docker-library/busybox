@@ -1,3 +1,5 @@
-- getconf (http://lists.busybox.net/pipermail/busybox/2014-August/081316.html)
 - iptables-xml ?
-- ldd
+- ldd ? (if we're 100% statically compiled, what good is ldd?  it usually ties into our libc, and we don't have one)
+
+	#!/bin/sh
+	echo '	not a dynamic executable'
