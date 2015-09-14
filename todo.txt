@@ -1,5 +1,0 @@
-- iptables-xml ?
-- ldd ? (if we're 100% statically compiled, what good is ldd?  it usually ties into our libc, and we don't have one)
-
-	#!/bin/sh
-	echo '	not a dynamic executable'

@@ -1,9 +1,9 @@
 FROM ubuntu:trusty
 
-ENV BUSYBOX_STATIC_VERSION 1:1.21.0-1ubuntu1
+ENV BUSYBOX_VERSION 1:1.21.0-1ubuntu1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-		busybox-static=$BUSYBOX_STATIC_VERSION \
+		busybox-static=$BUSYBOX_VERSION \
 	&& rm -rf /var/lib/apt/lists/*
 
 WORKDIR /rootfs
