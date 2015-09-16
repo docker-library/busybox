@@ -1,14 +1,9 @@
 #!/bin/bash
 set -e
 
-declare -A prefixes=(
-	[upstream]=''
-	[ubuntu-trusty]='ubuntu'
-)
-
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
-versions=( upstream/ ubuntu-*/ )
+versions=( */ )
 versions=( "${versions[@]%/}" )
 url='git://github.com/docker-library/busybox'
 
@@ -21,14 +16,18 @@ for version in "${versions[@]}"; do
 	fullVersion="${fullVersion#*:}"
 	fullVersion="${fullVersion%-*}"
 
-	prefix="${prefixes[$version]:+${prefixes[$version]}-}"
+	verPrefix="$version"
+	if [ "$version" = 'upstream' ]; then
+		verPrefix=''
+	fi
+	prefix="${verPrefix:+$verPrefix-}"
 
 	versionAliases=()
 	while [ "${fullVersion%.*}" != "$fullVersion" ]; do
 		versionAliases+=( $prefix$fullVersion )
 		fullVersion="${fullVersion%.*}"
 	done
-	versionAliases+=( $prefix$fullVersion ${prefixes[$version]:-latest} )
+	versionAliases+=( $prefix$fullVersion ${verPrefix:-latest} )
 
 	echo
 	for va in "${versionAliases[@]}"; do

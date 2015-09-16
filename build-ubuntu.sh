@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-cd "$(readlink -f "$(dirname "$BASH_SOURCE")")/ubuntu-trusty"
+cd "$(readlink -f "$(dirname "$BASH_SOURCE")")/ubuntu"
 
 set -x
 docker build -t busybox:ubuntu-builder --pull - < Dockerfile.builder
