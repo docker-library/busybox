@@ -16,18 +16,18 @@ for version in "${versions[@]}"; do
 	fullVersion="${fullVersion#*:}"
 	fullVersion="${fullVersion%-*}"
 
-	verPrefix="$version"
+	verSuffix="$version"
 	if [ "$version" = 'upstream' ]; then
-		verPrefix=''
+		verSuffix=''
 	fi
-	prefix="${verPrefix:+$verPrefix-}"
+	suffix="${verSuffix:+-$verSuffix}"
 
 	versionAliases=()
 	while [ "${fullVersion%.*}" != "$fullVersion" ]; do
-		versionAliases+=( $prefix$fullVersion )
+		versionAliases+=( $fullVersion$suffix )
 		fullVersion="${fullVersion%.*}"
 	done
-	versionAliases+=( $prefix$fullVersion ${verPrefix:-latest} )
+	versionAliases+=( $fullVersion$suffix ${verSuffix:-latest} )
 
 	echo
 	for va in "${versionAliases[@]}"; do
