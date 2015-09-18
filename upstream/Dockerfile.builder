@@ -107,6 +107,10 @@ RUN mkdir -p rootfs/etc \
 		/usr/src/buildroot/system/skeleton/etc/group \
 		rootfs/etc/
 
+# create /tmp
+RUN mkdir -p rootfs/tmp \
+	&& chmod 1777 rootfs/tmp
+
 # create missing home directories
 RUN set -ex \
 	&& cd rootfs \
