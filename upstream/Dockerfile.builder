@@ -106,3 +106,16 @@ RUN mkdir -p rootfs/etc \
 		/usr/src/buildroot/system/skeleton/etc/shadow \
 		/usr/src/buildroot/system/skeleton/etc/group \
 		rootfs/etc/
+
+# create missing home directories
+RUN set -ex \
+	&& cd rootfs \
+	&& for userHome in $(awk -F ':' '{ print $3 ":" $4 "=" $6 }' etc/passwd); do \
+		user="${userHome%%=*}"; \
+		home="${userHome#*=}"; \
+		home="./${home#/}"; \
+		if [ ! -d "$home" ]; then \
+			mkdir -p "$home"; \
+			chown "$user" "$home"; \
+		fi; \
+	done
