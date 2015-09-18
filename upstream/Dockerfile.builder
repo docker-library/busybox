@@ -38,8 +38,10 @@ RUN set -x \
 	&& rm buildroot.tar.bz2*
 
 RUN confs=' \
-		BR2_TOOLCHAIN_BUILDROOT_INET_RPC \
 		BR2_STATIC_LIBS \
+		BR2_TOOLCHAIN_BUILDROOT_INET_RPC \
+		BR2_TOOLCHAIN_BUILDROOT_WCHAR \
+		BR2_x86_64 \
 	' \
 	&& set -xe \
 	&& cd /usr/src/buildroot \
@@ -79,6 +81,7 @@ RUN confs=' \
 		CONFIG_AR \
 		CONFIG_FEATURE_AR_LONG_FILENAMES \
 		CONFIG_FEATURE_AR_CREATE \
+		CONFIG_STATIC \
 	' \
 	&& set -xe \
 	&& make defconfig \
@@ -92,9 +95,9 @@ RUN confs=' \
 	done
 
 RUN set -x \
-	&& LDFLAGS='--static' \
-		make -j$(nproc) \
-			CROSS_COMPILE="$(basename /usr/src/buildroot/output/host/usr/*-buildroot-linux-uclibc)-" \
+	&& make -j$(nproc) \
+		CROSS_COMPILE="$(basename /usr/src/buildroot/output/host/usr/*-buildroot-linux-uclibc)-" \
+		busybox \
 	&& mkdir -p rootfs/bin \
 	&& ln -v busybox rootfs/bin/ \
 	&& rootfs/bin/busybox --install rootfs/bin \
