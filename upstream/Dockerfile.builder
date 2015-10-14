@@ -86,6 +86,7 @@ RUN set -x \
 	&& tar -xf busybox.tar.bz2 --strip-components 1 \
 	&& rm busybox.tar.bz2*
 
+# TODO remove CONFIG_FEATURE_SYNC_FANCY from this explicit list after the next release of busybox (since it's disabled by default upstream now)
 RUN yConfs=' \
 		CONFIG_AR \
 		CONFIG_FEATURE_AR_LONG_FILENAMES \
@@ -93,6 +94,7 @@ RUN yConfs=' \
 		CONFIG_STATIC \
 	' \
 	&& nConfs=' \
+		CONFIG_FEATURE_SYNC_FANCY \
 	' \
 	&& set -xe \
 	&& make defconfig \
