@@ -86,20 +86,28 @@ RUN set -x \
 	&& tar -xf busybox.tar.bz2 --strip-components 1 \
 	&& rm busybox.tar.bz2*
 
-RUN confs=' \
+RUN yConfs=' \
 		CONFIG_AR \
 		CONFIG_FEATURE_AR_LONG_FILENAMES \
 		CONFIG_FEATURE_AR_CREATE \
 		CONFIG_STATIC \
 	' \
+	&& nConfs=' \
+	' \
 	&& set -xe \
 	&& make defconfig \
-	&& for conf in $confs; do \
+	&& for conf in $nConfs; do \
+		sed -i "s!^$conf=y!# $conf is not set!" .config; \
+	done \
+	&& for conf in $yConfs; do \
 		sed -i "s!^# $conf is not set\$!$conf=y!" .config; \
 		grep -q "^$conf=y" .config || echo "$conf=y" >> .config; \
 	done \
 	&& make oldconfig \
-	&& for conf in $confs; do \
+	&& for conf in $nConfs; do \
+		! grep -q "^$conf=y" .config; \
+	done \
+	&& for conf in $yConfs; do \
 		grep -q "^$conf=y" .config; \
 	done
 
