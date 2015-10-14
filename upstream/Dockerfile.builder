@@ -37,22 +37,31 @@ RUN set -x \
 	&& tar -xf buildroot.tar.bz2 --strip-components 1 \
 	&& rm buildroot.tar.bz2*
 
-RUN confs=' \
+RUN yConfs=' \
 		BR2_STATIC_LIBS \
 		BR2_TOOLCHAIN_BUILDROOT_INET_RPC \
 		BR2_TOOLCHAIN_BUILDROOT_WCHAR \
 		BR2_x86_64 \
 	' \
+	&& nConfs=' \
+		BR2_SHARED_LIBS \
+		BR2_i386 \
+	' \
 	&& set -xe \
 	&& cd /usr/src/buildroot \
 	&& make defconfig \
-	&& sed -i 's!^BR2_SHARED_LIBS=y!# BR2_SHARED_LIBS is not set!' .config \
-	&& for conf in $confs; do \
+	&& for conf in $nConfs; do \
+		sed -i "s!^$conf=y!# $conf is not set!" .config; \
+	done \
+	&& for conf in $yConfs; do \
 		sed -i "s!^# $conf is not set\$!$conf=y!" .config; \
 		grep -q "^$conf=y" .config || echo "$conf=y" >> .config; \
 	done \
 	&& make oldconfig \
-	&& for conf in $confs; do \
+	&& for conf in $nConfs; do \
+		! grep -q "^$conf=y" .config; \
+	done \
+	&& for conf in $yConfs; do \
 		grep -q "^$conf=y" .config; \
 	done
 
