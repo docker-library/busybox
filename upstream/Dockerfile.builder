@@ -40,6 +40,7 @@ RUN set -x \
 RUN yConfs=' \
 		BR2_STATIC_LIBS \
 		BR2_TOOLCHAIN_BUILDROOT_INET_RPC \
+		BR2_TOOLCHAIN_BUILDROOT_UCLIBC \
 		BR2_TOOLCHAIN_BUILDROOT_WCHAR \
 		BR2_x86_64 \
 	' \
@@ -119,8 +120,10 @@ RUN set -x \
 		busybox \
 	&& mkdir -p rootfs/bin \
 	&& ln -v busybox rootfs/bin/ \
-	&& rootfs/bin/busybox --install rootfs/bin \
-	&& ln -v ../buildroot/output/target/usr/bin/getconf rootfs/bin/
+	&& chroot rootfs /bin/busybox --install /bin
+
+# install "getconf" from buildroot (which is compiled statically already)
+RUN ln -v ../buildroot/output/target/usr/bin/getconf rootfs/bin/
 
 RUN mkdir -p rootfs/etc \
 	&& ln -v \
@@ -145,3 +148,10 @@ RUN set -ex \
 			chown "$user" "$home"; \
 		fi; \
 	done
+
+# test and make sure it works
+RUN chroot rootfs /bin/sh -xec 'true'
+# test and make sure DNS works too
+RUN cp -L /etc/resolv.conf rootfs/etc/ \
+	&& chroot rootfs /bin/sh -xec 'nslookup google.com' \
+	&& rm rootfs/etc/resolv.conf
