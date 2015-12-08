@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y \
 # sub   2048g/45428075 2009-01-15
 RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys AB07D806D2CE741FB886EE50B025BA8B59C36319
 
-ENV BUILDROOT_VERSION 2015.08.1
+ENV BUILDROOT_VERSION 2015.11.1
 
 RUN set -x \
 	&& mkdir -p /usr/src/buildroot \
