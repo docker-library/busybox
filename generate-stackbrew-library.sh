@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+latest='uclibc'
+
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
 versions=( */ )
@@ -16,18 +18,24 @@ for version in "${versions[@]}"; do
 	fullVersion="${fullVersion#*:}"
 	fullVersion="${fullVersion%-*}"
 
-	verSuffix="$version"
-	if [ "$version" = 'upstream' ]; then
-		verSuffix=''
-	fi
-	suffix="${verSuffix:+-$verSuffix}"
+	suffix="-$version"
 
 	versionAliases=()
 	while [ "${fullVersion%.*}" != "$fullVersion" ]; do
 		versionAliases+=( $fullVersion$suffix )
+		if [ "$version" = "$latest" ]; then
+			versionAliases+=( $fullVersion )
+		fi
 		fullVersion="${fullVersion%.*}"
 	done
-	versionAliases+=( $fullVersion$suffix ${verSuffix:-latest} )
+	versionAliases+=( $fullVersion$suffix )
+	if [ "$version" = "$latest" ]; then
+		versionAliases+=( $fullVersion )
+	fi
+	versionAliases+=( $version )
+	if [ "$version" = "$latest" ]; then
+		versionAliases+=( latest )
+	fi
 
 	echo
 	for va in "${versionAliases[@]}"; do

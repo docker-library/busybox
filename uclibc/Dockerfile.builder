@@ -76,16 +76,18 @@ ENV PATH /usr/src/buildroot/output/host/usr/bin:$PATH
 # sub   1024g/2C766641 2006-12-12
 RUN gpg --keyserver pool.sks-keyservers.net --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
 
-WORKDIR /usr/src/busybox
-
 ENV BUSYBOX_VERSION 1.24.1
 
 RUN set -x \
 	&& curl -fsSL "http://busybox.net/downloads/busybox-${BUSYBOX_VERSION}.tar.bz2" -o busybox.tar.bz2 \
 	&& curl -fsSL "http://busybox.net/downloads/busybox-${BUSYBOX_VERSION}.tar.bz2.sign" -o busybox.tar.bz2.sign \
 	&& gpg --verify busybox.tar.bz2.sign \
-	&& tar -xf busybox.tar.bz2 --strip-components 1 \
+	&& tar -xjf busybox.tar.bz2 \
+	&& mkdir -p /usr/src \
+	&& mv "busybox-${BUSYBOX_VERSION}" /usr/src/busybox \
 	&& rm busybox.tar.bz2*
+
+WORKDIR /usr/src/busybox
 
 # TODO remove CONFIG_FEATURE_SYNC_FANCY from this explicit list after the next release of busybox (since it's disabled by default upstream now)
 RUN yConfs=' \
@@ -118,19 +120,21 @@ RUN set -x \
 	&& make -j$(nproc) \
 		CROSS_COMPILE="$(basename /usr/src/buildroot/output/host/usr/*-buildroot-linux-uclibc)-" \
 		busybox \
+	&& ./busybox --help \
 	&& mkdir -p rootfs/bin \
-	&& ln -v busybox rootfs/bin/ \
+	&& ln -vL busybox rootfs/bin/ \
+	\
+	&& ln -vL ../buildroot/output/target/usr/bin/getconf rootfs/bin/ \
+	\
 	&& chroot rootfs /bin/busybox --install /bin
 
-# install "getconf" from buildroot (which is compiled statically already)
-RUN ln -v ../buildroot/output/target/usr/bin/getconf rootfs/bin/
-
-RUN mkdir -p rootfs/etc \
-	&& ln -v \
-		/usr/src/buildroot/system/skeleton/etc/passwd \
-		/usr/src/buildroot/system/skeleton/etc/shadow \
-		/usr/src/buildroot/system/skeleton/etc/group \
-		rootfs/etc/
+RUN set -ex \
+	&& mkdir -p rootfs/etc \
+	&& for f in passwd shadow group; do \
+		ln -vL \
+			"../buildroot/system/skeleton/etc/$f" \
+			"rootfs/etc/$f"; \
+	done
 
 # create /tmp
 RUN mkdir -p rootfs/tmp \
@@ -151,6 +155,7 @@ RUN set -ex \
 
 # test and make sure it works
 RUN chroot rootfs /bin/sh -xec 'true'
+
 # test and make sure DNS works too
 RUN cp -L /etc/resolv.conf rootfs/etc/ \
 	&& chroot rootfs /bin/sh -xec 'nslookup google.com' \
