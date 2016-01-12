@@ -156,6 +156,10 @@ RUN set -ex \
 # test and make sure it works
 RUN chroot rootfs /bin/sh -xec 'true'
 
+# ensure correct timezone (UTC)
+RUN ln -v /etc/localtime rootfs/etc/ \
+	&& [ "$(chroot rootfs date +%Z)" = 'UTC' ]
+
 # test and make sure DNS works too
 RUN cp -L /etc/resolv.conf rootfs/etc/ \
 	&& chroot rootfs /bin/sh -xec 'nslookup google.com' \
