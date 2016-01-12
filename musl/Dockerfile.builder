@@ -29,6 +29,10 @@ RUN set -x \
 
 WORKDIR /usr/src/busybox
 
+# https://www.mail-archive.com/toybox@lists.landley.net/msg02528.html
+# https://www.mail-archive.com/toybox@lists.landley.net/msg02526.html
+RUN sed -i 's/^struct kconf_id \*$/static &/g' scripts/kconfig/zconf.hash.c_shipped
+
 # see http://wiki.musl-libc.org/wiki/Building_Busybox
 # TODO remove CONFIG_FEATURE_SYNC_FANCY from this explicit list after the next release of busybox (since it's disabled by default upstream now)
 RUN yConfs=' \
