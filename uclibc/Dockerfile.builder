@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
 		rsync \
 		unzip \
 		wget \
+		git \
 	&& rm -rf /var/lib/apt/lists/*
 
 # we grab buildroot for it's uClibc toolchain
@@ -65,6 +66,10 @@ RUN yConfs=' \
 	&& for conf in $yConfs; do \
 		grep -q "^$conf=y" .config; \
 	done
+
+COPY resolv.c.patch /usr/src/buildroot/package/uclibc/1.0.9/0001-resolv-retry-error.patch
+
+ENV TERM xterm
 
 # http://www.finnie.org/2014/02/13/compiling-busybox-with-uclibc/
 RUN make -C /usr/src/buildroot -j$(nproc) toolchain
