@@ -66,6 +66,15 @@ RUN yConfs=' \
 		grep -q "^$conf=y" .config; \
 	done
 
+ENV UCLIBC_NG_VERSION 1.0.13
+ENV UCLIBC_NG_SHA256 7baae61e243da3ab85e219fead68406995be5eabf889001c0d41676546b19317
+
+RUN set -xe \
+	&& cd /usr/src/buildroot \
+	&& sed -i 's!^BR2_UCLIBC_VERSION_STRING=.*!BR2_UCLIBC_VERSION_STRING="'"$UCLIBC_NG_VERSION"'"!' .config \
+	&& grep -q '^BR2_UCLIBC_VERSION_STRING="'"$UCLIBC_NG_VERSION"'"$' .config \
+	&& echo "sha256  $UCLIBC_NG_SHA256  uClibc-ng-${UCLIBC_NG_VERSION}.tar.xz" > package/uclibc/uclibc.hash
+
 # http://www.finnie.org/2014/02/13/compiling-busybox-with-uclibc/
 RUN make -C /usr/src/buildroot -j$(nproc) toolchain
 ENV PATH /usr/src/buildroot/output/host/usr/bin:$PATH
