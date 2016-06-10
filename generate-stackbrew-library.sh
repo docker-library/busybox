@@ -38,6 +38,7 @@ Maintainers: Tianon Gravi <admwiggin@gmail.com> (@tianon),
              Joseph Ferguson <yosifkit@gmail.com> (@yosifkit),
              Jérôme Petazzoni <jerome@docker.com> (@jpetazzo)
 GitRepo: https://github.com/docker-library/busybox.git
+GitFetch: refs/heads/dist
 EOH
 
 # prints "$2$1$3$1...$N"
