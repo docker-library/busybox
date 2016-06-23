@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
 # sub   1024g/2C766641 2006-12-12
 RUN gpg --keyserver pool.sks-keyservers.net --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
 
-ENV BUSYBOX_VERSION 1.24.2
+ENV BUSYBOX_VERSION 1.25.0
 
 RUN set -x \
 	&& curl -fsSL "http://busybox.net/downloads/busybox-${BUSYBOX_VERSION}.tar.bz2" -o busybox.tar.bz2 \
