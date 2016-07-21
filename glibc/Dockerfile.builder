@@ -72,6 +72,7 @@ RUN set -x \
 		rootfs/bin/busybox \
 		rootfs/bin/getconf \
 		/lib/"$(gcc -print-multiarch)"/libnss*.so.* \
+		/lib/"$(gcc -print-multiarch)"/libpthread*.so.* \
 	&& while [ "$#" -gt 0 ]; do \
 		f="$1"; shift; \
 		fn="$(basename "$f")"; \ 
