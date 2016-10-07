@@ -37,34 +37,51 @@ RUN set -x \
 	&& tar -xf buildroot.tar.bz2 --strip-components 1 \
 	&& rm buildroot.tar.bz2*
 
-RUN yConfs=' \
-		BR2_STATIC_LIBS \
-		BR2_TOOLCHAIN_BUILDROOT_INET_RPC \
-		BR2_TOOLCHAIN_BUILDROOT_UCLIBC \
-		BR2_TOOLCHAIN_BUILDROOT_WCHAR \
-		BR2_x86_64 \
-	' \
-	&& nConfs=' \
+RUN set -ex; \
+	\
+	cd /usr/src/buildroot; \
+	\
+	setConfs=' \
+		BR2_STATIC_LIBS=y \
+		BR2_TOOLCHAIN_BUILDROOT_INET_RPC=y \
+		BR2_TOOLCHAIN_BUILDROOT_UCLIBC=y \
+		BR2_TOOLCHAIN_BUILDROOT_WCHAR=y \
+		BR2_x86_64=y \
+	'; \
+	\
+	unsetConfs=' \
 		BR2_SHARED_LIBS \
 		BR2_i386 \
-	' \
-	&& set -xe \
-	&& cd /usr/src/buildroot \
-	&& make defconfig \
-	&& for conf in $nConfs; do \
-		sed -i "s!^$conf=y!# $conf is not set!" .config; \
-	done \
-	&& for conf in $yConfs; do \
-		sed -i "s!^# $conf is not set\$!$conf=y!" .config; \
-		grep -q "^$conf=y" .config || echo "$conf=y" >> .config; \
-	done \
-	&& make oldconfig \
-	&& for conf in $nConfs; do \
-		! grep -q "^$conf=y" .config; \
-	done \
-	&& for conf in $yConfs; do \
-		grep -q "^$conf=y" .config; \
-	done
+	'; \
+	\
+	make defconfig; \
+	\
+	for conf in $unsetConfs; do \
+		sed -i \
+			-e "s!^$conf=.*\$!# $conf is not set!" \
+			.config; \
+	done; \
+	\
+	for confV in $setConfs; do \
+		conf="${confV%=*}"; \
+		sed -i \
+			-e "s!^$conf=.*\$!$confV!" \
+			-e "s!^# $conf is not set\$!$confV!" \
+			.config; \
+		if ! grep -q "^$confV\$" .config; then \
+			echo "$confV" >> .config; \
+		fi; \
+	done; \
+	\
+	make oldconfig; \
+	\
+# trust, but verify
+	for conf in $unsetConfs; do \
+		! grep -q "^$conf=" .config; \
+	done; \
+	for confV in $setConfs; do \
+		grep -q "^$confV\$" .config; \
+	done;
 
 ENV UCLIBC_NG_VERSION 1.0.13
 ENV UCLIBC_NG_SHA256 7baae61e243da3ab85e219fead68406995be5eabf889001c0d41676546b19317
@@ -99,34 +116,52 @@ RUN set -x \
 WORKDIR /usr/src/busybox
 
 # TODO remove CONFIG_FEATURE_SYNC_FANCY from this explicit list after the next release of busybox (since it's disabled by default upstream now)
-RUN yConfs=' \
-		CONFIG_AR \
-		CONFIG_FEATURE_AR_LONG_FILENAMES \
-		CONFIG_FEATURE_AR_CREATE \
-		CONFIG_STATIC \
-	' \
-	&& nConfs=' \
+# CONFIG_LAST_SUPPORTED_WCHAR: see https://github.com/docker-library/busybox/issues/13 (UTF-8 input)
+RUN set -ex; \
+	\
+	setConfs=' \
+		CONFIG_AR=y \
+		CONFIG_FEATURE_AR_CREATE=y \
+		CONFIG_FEATURE_AR_LONG_FILENAMES=y \
+		CONFIG_LAST_SUPPORTED_WCHAR=0 \
+		CONFIG_STATIC=y \
+	'; \
+	\
+	unsetConfs=' \
 		CONFIG_FEATURE_SYNC_FANCY \
-	' \
-	&& set -xe \
-	&& make defconfig \
-	&& for conf in $nConfs; do \
-		sed -i "s!^$conf=y!# $conf is not set!" .config; \
-	done \
-	&& for conf in $yConfs; do \
-		sed -i "s!^# $conf is not set\$!$conf=y!" .config; \
-		grep -q "^$conf=y" .config || echo "$conf=y" >> .config; \
-	done \
-	&& make oldconfig \
-	&& for conf in $nConfs; do \
-		! grep -q "^$conf=y" .config; \
-	done \
-	&& for conf in $yConfs; do \
-		grep -q "^$conf=y" .config; \
-	done
+	'; \
+	\
+	make defconfig; \
+	\
+	for conf in $unsetConfs; do \
+		sed -i \
+			-e "s!^$conf=.*\$!# $conf is not set!" \
+			.config; \
+	done; \
+	\
+	for confV in $setConfs; do \
+		conf="${confV%=*}"; \
+		sed -i \
+			-e "s!^$conf=.*\$!$confV!" \
+			-e "s!^# $conf is not set\$!$confV!" \
+			.config; \
+		if ! grep -q "^$confV\$" .config; then \
+			echo "$confV" >> .config; \
+		fi; \
+	done; \
+	\
+	make oldconfig; \
+	\
+# trust, but verify
+	for conf in $unsetConfs; do \
+		! grep -q "^$conf=" .config; \
+	done; \
+	for confV in $setConfs; do \
+		grep -q "^$confV\$" .config; \
+	done;
 
-RUN set -x \
-	&& make -j$(nproc) \
+RUN set -ex \
+	&& make -j "$(nproc)" \
 		CROSS_COMPILE="$(basename /usr/src/buildroot/output/host/usr/*-buildroot-linux-uclibc*)-" \
 		busybox \
 	&& ./busybox --help \

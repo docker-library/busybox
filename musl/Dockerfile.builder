@@ -33,41 +33,59 @@ WORKDIR /usr/src/busybox
 # https://www.mail-archive.com/toybox@lists.landley.net/msg02526.html
 RUN sed -i 's/^struct kconf_id \*$/static &/g' scripts/kconfig/zconf.hash.c_shipped
 
-# see http://wiki.musl-libc.org/wiki/Building_Busybox
 # TODO remove CONFIG_FEATURE_SYNC_FANCY from this explicit list after the next release of busybox (since it's disabled by default upstream now)
-RUN yConfs=' \
-		CONFIG_AR \
-		CONFIG_FEATURE_AR_LONG_FILENAMES \
-		CONFIG_FEATURE_AR_CREATE \
-		CONFIG_STATIC \
-	' \
-	&& nConfs=' \
+# CONFIG_LAST_SUPPORTED_WCHAR: see https://github.com/docker-library/busybox/issues/13 (UTF-8 input)
+# see http://wiki.musl-libc.org/wiki/Building_Busybox
+RUN set -ex; \
+	\
+	setConfs=' \
+		CONFIG_AR=y \
+		CONFIG_FEATURE_AR_CREATE=y \
+		CONFIG_FEATURE_AR_LONG_FILENAMES=y \
+		CONFIG_LAST_SUPPORTED_WCHAR=0 \
+		CONFIG_STATIC=y \
+	'; \
+	\
+	unsetConfs=' \
 		CONFIG_FEATURE_SYNC_FANCY \
 		\
 		CONFIG_FEATURE_HAVE_RPC \
 		CONFIG_FEATURE_INETD_RPC \
 		CONFIG_FEATURE_UTMP \
 		CONFIG_FEATURE_WTMP \
-	' \
-	&& set -xe \
-	&& make defconfig \
-	&& for conf in $nConfs; do \
-		sed -i "s!^$conf=y!# $conf is not set!" .config; \
-	done \
-	&& for conf in $yConfs; do \
-		sed -i "s!^# $conf is not set\$!$conf=y!" .config; \
-		grep -q "^$conf=y" .config || echo "$conf=y" >> .config; \
-	done \
-	&& make oldconfig \
-	&& for conf in $nConfs; do \
-		! grep -q "^$conf=y" .config; \
-	done \
-	&& for conf in $yConfs; do \
-		grep -q "^$conf=y" .config; \
-	done
+	'; \
+	\
+	make defconfig; \
+	\
+	for conf in $unsetConfs; do \
+		sed -i \
+			-e "s!^$conf=.*\$!# $conf is not set!" \
+			.config; \
+	done; \
+	\
+	for confV in $setConfs; do \
+		conf="${confV%=*}"; \
+		sed -i \
+			-e "s!^$conf=.*\$!$confV!" \
+			-e "s!^# $conf is not set\$!$confV!" \
+			.config; \
+		if ! grep -q "^$confV\$" .config; then \
+			echo "$confV" >> .config; \
+		fi; \
+	done; \
+	\
+	make oldconfig; \
+	\
+# trust, but verify
+	for conf in $unsetConfs; do \
+		! grep -q "^$conf=" .config; \
+	done; \
+	for confV in $setConfs; do \
+		grep -q "^$confV\$" .config; \
+	done;
 
-RUN set -x \
-	&& make -j$(getconf _NPROCESSORS_ONLN) \
+RUN set -ex \
+	&& make -j "$(getconf _NPROCESSORS_ONLN)" \
 		busybox \
 	&& ./busybox --help \
 	&& mkdir -p rootfs/bin \
