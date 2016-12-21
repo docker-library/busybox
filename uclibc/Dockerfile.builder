@@ -31,8 +31,8 @@ ENV BUILDROOT_VERSION 2015.11.1
 RUN set -x \
 	&& mkdir -p /usr/src/buildroot \
 	&& cd /usr/src/buildroot \
-	&& curl -fsSL "http://buildroot.uclibc.org/downloads/buildroot-${BUILDROOT_VERSION}.tar.gz" -o buildroot.tar.bz2 \
-	&& curl -fsSL "http://buildroot.uclibc.org/downloads/buildroot-${BUILDROOT_VERSION}.tar.gz.sign" -o buildroot.tar.bz2.sign \
+	&& curl -fsSL "http://buildroot.uclibc.org/downloads/buildroot-${BUILDROOT_VERSION}.tar.bz2" -o buildroot.tar.bz2 \
+	&& curl -fsSL "http://buildroot.uclibc.org/downloads/buildroot-${BUILDROOT_VERSION}.tar.bz2.sign" -o buildroot.tar.bz2.sign \
 	&& gpg --verify buildroot.tar.bz2.sign \
 	&& tar -xf buildroot.tar.bz2 --strip-components 1 \
 	&& rm buildroot.tar.bz2*
