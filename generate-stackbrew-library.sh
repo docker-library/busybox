@@ -14,14 +14,13 @@ fileCommit() {
 	git log -1 --format='format:%H' --branches -- "$@"
 }
 
-# get the most recent commit which modified "$1/Dockerfile" or any file COPY'd from "$1/Dockerfile"
+# get the most recent commit which modified "$1"
 dirCommit() {
 	local dir="$1"; shift
 	(
-		cd "$dir"
-		dfCommit="$(fileCommit Dockerfile)"
+		dfCommit="$(fileCommit "$dir")"
 		fileCommit \
-			Dockerfile \
+			"$dir" \
 			$(git show "$dfCommit":./Dockerfile | awk '
 				toupper($1) ~ /^(COPY|ADD)$/ {
 					for (i = 2; i < NF; i++) {
