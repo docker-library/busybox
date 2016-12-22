@@ -1,5 +1,6 @@
 FROM debian:jessie
 
+ARG CI
 RUN apt-get update && apt-get install -y \
 		bzip2 \
 		curl \
@@ -93,7 +94,8 @@ RUN set -xe \
 	&& echo "sha256  $UCLIBC_NG_SHA256  uClibc-ng-${UCLIBC_NG_VERSION}.tar.xz" > package/uclibc/uclibc.hash
 
 # http://www.finnie.org/2014/02/13/compiling-busybox-with-uclibc/
-RUN make -C /usr/src/buildroot -j$(nproc) toolchain
+RUN if [ "${CI}" = "true" ]; then make -C /usr/src/buildroot -j$(nproc) toolchain > /dev/null; else make -C /usr/src/buildroot -j$(nproc) toolchain; fi
+
 ENV PATH /usr/src/buildroot/output/host/usr/bin:$PATH
 
 # pub   1024D/ACC9965B 2006-12-12
