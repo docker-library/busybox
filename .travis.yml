@@ -7,7 +7,7 @@ env:
   - VERSION=uclibc
 
 install:
-  - git clone https://github.com/docker-library/official-images.git ~/official-images
+  - git clone --depth 1 https://github.com/docker-library/official-images.git ~/official-images
 
 before_script:
   - env | sort
