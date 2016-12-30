@@ -1,5 +1,6 @@
 FROM alpine:3.3
 
+ARG CI
 RUN apk add --no-cache \
 		bzip2 \
 		curl \
