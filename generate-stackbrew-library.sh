@@ -11,7 +11,7 @@ variants=( "${variants[@]%/}" )
 
 # get the most recent commit which modified any of "$@"
 fileCommit() {
-	git log -1 --format='format:%H' HEAD -- "$@"
+	git log -1 --format='format:%H' --branches -- "$@"
 }
 
 # get the most recent commit which modified "$1/Dockerfile" or any file COPY'd from "$1/Dockerfile"
@@ -19,10 +19,11 @@ dirCommit() {
 	local dir="$1"; shift
 	(
 		cd "$dir"
+		dfCommit="$(fileCommit Dockerfile)"
 		fileCommit \
 			Dockerfile \
-			$(git show HEAD:./Dockerfile | awk '
-			toupper($1) ~ /^(COPY|ADD)$/ {
+			$(git show "$dfCommit":./Dockerfile | awk '
+				toupper($1) ~ /^(COPY|ADD)$/ {
 					for (i = 2; i < NF; i++) {
 						print $i
 					}
@@ -49,6 +50,8 @@ join() {
 }
 
 for variant in "${variants[@]}"; do
+	[ -f "$variant/Dockerfile.builder" ] || continue
+
 	commit="$(dirCommit "$variant")"
 
 	fullVersion="$(git show "$commit":"$variant/Dockerfile.builder" | awk '$1 == "ENV" && $2 == "BUSYBOX_VERSION" { print $3; exit }')"

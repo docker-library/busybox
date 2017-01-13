@@ -11,6 +11,7 @@ versions=( "${versions[@]%/}" )
 
 base='busybox:'
 for version in "${versions[@]}"; do
+	[ -f "$version/Dockerfile.builder" ] || continue
 	(
 		set -x
 		docker build -t "$base$version-builder" --pull -f "$version/Dockerfile.builder" "$version"

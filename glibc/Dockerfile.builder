@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
 # sub   1024g/2C766641 2006-12-12
 RUN gpg --keyserver pool.sks-keyservers.net --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
 
-ENV BUSYBOX_VERSION 1.25.0
+ENV BUSYBOX_VERSION 1.26.2
 
 RUN set -x \
 	&& curl -fsSL "http://busybox.net/downloads/busybox-${BUSYBOX_VERSION}.tar.bz2" -o busybox.tar.bz2 \
@@ -27,37 +27,55 @@ RUN set -x \
 WORKDIR /usr/src/busybox
 
 # TODO remove CONFIG_FEATURE_SYNC_FANCY from this explicit list after the next release of busybox (since it's disabled by default upstream now)
+# CONFIG_LAST_SUPPORTED_WCHAR: see https://github.com/docker-library/busybox/issues/13 (UTF-8 input)
 # As long as we rely on libnss, we have to have libc.so anyhow, so
 # we've removed CONFIG_STATIC here for now... :cry:
-RUN yConfs=' \
-		CONFIG_AR \
-		CONFIG_FEATURE_AR_LONG_FILENAMES \
-		CONFIG_FEATURE_AR_CREATE \
-	' \
-	&& nConfs=' \
+RUN set -ex; \
+	\
+	setConfs=' \
+		CONFIG_AR=y \
+		CONFIG_FEATURE_AR_CREATE=y \
+		CONFIG_FEATURE_AR_LONG_FILENAMES=y \
+		CONFIG_LAST_SUPPORTED_WCHAR=0 \
+	'; \
+	\
+	unsetConfs=' \
 		CONFIG_FEATURE_SYNC_FANCY \
-	' \
-	&& set -xe \
-	&& make defconfig \
-	&& for conf in $nConfs; do \
-		sed -i "s!^$conf=y!# $conf is not set!" .config; \
-	done \
-	&& for conf in $yConfs; do \
-		sed -i "s!^# $conf is not set\$!$conf=y!" .config; \
-		grep -q "^$conf=y" .config || echo "$conf=y" >> .config; \
-	done \
-	&& make oldconfig \
-	&& for conf in $nConfs; do \
-		! grep -q "^$conf=y" .config; \
-	done \
-	&& for conf in $yConfs; do \
-		grep -q "^$conf=y" .config; \
-	done
+	'; \
+	\
+	make defconfig; \
+	\
+	for conf in $unsetConfs; do \
+		sed -i \
+			-e "s!^$conf=.*\$!# $conf is not set!" \
+			.config; \
+	done; \
+	\
+	for confV in $setConfs; do \
+		conf="${confV%=*}"; \
+		sed -i \
+			-e "s!^$conf=.*\$!$confV!" \
+			-e "s!^# $conf is not set\$!$confV!" \
+			.config; \
+		if ! grep -q "^$confV\$" .config; then \
+			echo "$confV" >> .config; \
+		fi; \
+	done; \
+	\
+	make oldconfig; \
+	\
+# trust, but verify
+	for conf in $unsetConfs; do \
+		! grep -q "^$conf=" .config; \
+	done; \
+	for confV in $setConfs; do \
+		grep -q "^$confV\$" .config; \
+	done;
 
 # hack hack hack hack hack
 # with glibc, static busybox uses libnss for DNS resolution :(
-RUN set -x \
-	&& make -j$(nproc) \
+RUN set -ex \
+	&& make -j "$(nproc)" \
 		busybox \
 	&& ./busybox --help \
 	&& mkdir -p rootfs/bin \
