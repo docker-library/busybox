@@ -14,7 +14,7 @@ before_script:
   - image="busybox:$VERSION"
 
 script:
-  - ./build.sh "$VERSION"
+  - travis_retry ./build.sh "$VERSION"
   - ~/official-images/test/run.sh "$image"
 
 after_script:
