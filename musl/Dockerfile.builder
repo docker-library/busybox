@@ -1,5 +1,63 @@
 FROM alpine:3.9
 
+RUN apk add --no-cache bash
+# nolog-unless-err inspired by https://anonscm.debian.org/cgit/collab-maint/devscripts.git/plain/scripts/annotate-output.sh?id=a3f68458f2e24e13bc7cd280d348f3c5861af2c8
+RUN { \
+	echo '#!/bin/bash'; \
+	echo 'set -e'; \
+	echo; \
+	echo 'OUT_DESC="stdout: "'; \
+	echo 'ERR_DESC="stderr: "'; \
+	echo; \
+	echo 'TMP_DIR="$(mktemp -d)"'; \
+	echo 'COM_LOG="$TMP_DIR/log"'; \
+	echo 'OUT_FIFO="$TMP_DIR/out"'; \
+	echo 'ERR_FIFO="$TMP_DIR/err"'; \
+	echo; \
+	echo 'cleanup() { rm -r "$TMP_DIR"; }'; \
+	echo 'trap "cleanup" EXIT'; \
+	echo; \
+	echo 'error() {'; \
+	echo '	awk "'; \
+	echo '		function work(tt, dst) {'; \
+# hacky sleep due to Docker race conditions where stderr and stdout get muxed wrong
+# for example: echo hi; echo >&2 hello; echo hi again
+# often, this will come out as:
+#   hello
+#   hi
+#   hi again
+# rather than "hello" being between the two stdout
+# (if we switch between stdout/stderr 15+ times in a single RUN, just give up trying to fix the race and prefer speed instead)
+	echo '			if (t != tt && t != 0 && wtf < 15) {'; \
+	echo '				system(\"sleep 1\")'; \
+	echo '				wtf++'; \
+	echo '			}'; \
+	echo '			print > dst'; \
+	echo '			fflush(dst)'; \
+	echo '			t = tt'; \
+	echo '		}'; \
+	echo '		/^$OUT_DESC/ { gsub(/^$OUT_DESC/, \"\"); work(1, \"/dev/stdout\"); next }'; \
+	echo '		/^$ERR_DESC/ { gsub(/^$ERR_DESC/, \"\"); work(2, \"/dev/stderr\"); next }'; \
+	echo '	" "$COM_LOG"'; \
+	echo '}'; \
+	echo 'trap "error" ERR'; \
+	echo; \
+	echo 'mkfifo "$OUT_FIFO" "$ERR_FIFO"'; \
+	echo; \
+	echo 'prefixOutput() {'; \
+	echo '	while IFS= read -r line; do printf "%s%s\\n" "$1" "$line"; done'; \
+	echo '	if [ ! -z "$line" ]; then printf "%s%s\\n" "$1" "$line"; fi'; \
+	echo '}'; \
+	echo 'exec 42>"$COM_LOG"'; \
+	echo 'prefixOutput "$OUT_DESC" < "$OUT_FIFO" >&42 &'; \
+	echo 'prefixOutput "$ERR_DESC" < "$ERR_FIFO" >&42 &'; \
+	echo; \
+	echo 'sh -ec "$*" >"$OUT_FIFO" 2>"$ERR_FIFO"'; \
+	} > /usr/local/bin/nolog-unless-err \
+	&& chmod +x /usr/local/bin/nolog-unless-err
+
+SHELL [ "nolog-unless-err" ]
+
 RUN apk add --no-cache \
 		bzip2 \
 		coreutils \
