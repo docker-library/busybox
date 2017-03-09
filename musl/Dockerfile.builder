@@ -52,6 +52,8 @@ RUN { \
 	echo 'exec 42>"$COM_LOG"'; \
 	echo 'prefixOutput "$OUT_DESC" < "$OUT_FIFO" >&42 &'; \
 	echo 'prefixOutput "$ERR_DESC" < "$ERR_FIFO" >&42 &'; \
+# write some bits on a loop to communicate our "aliveness"
+	echo 'while true; do sleep 60; echo -n .; done &'; \
 	echo; \
 	echo 'sh -ec "$*" >"$OUT_FIFO" 2>"$ERR_FIFO"'; \
 	} > /usr/local/bin/nolog-unless-err \
