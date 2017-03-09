@@ -27,6 +27,7 @@ RUN { \
 #   hi again
 # rather than "hello" being between the two stdout
 # (if we switch between stdout/stderr 15+ times in a single RUN, just give up trying to fix the race and prefer speed instead)
+# see https://github.com/docker/docker/issues/31706
 	echo '			if (t != tt && t != 0 && wtf < 15) {'; \
 	echo '				system(\"sleep 1\")'; \
 	echo '				wtf++'; \
