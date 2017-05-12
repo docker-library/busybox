@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
 # buildroot
 		bc \
 		cpio \
+		dpkg-dev \
 		g++ \
 		patch \
 		perl \
@@ -46,13 +47,26 @@ RUN set -ex; \
 		BR2_TOOLCHAIN_BUILDROOT_INET_RPC=y \
 		BR2_TOOLCHAIN_BUILDROOT_UCLIBC=y \
 		BR2_TOOLCHAIN_BUILDROOT_WCHAR=y \
-		BR2_x86_64=y \
 	'; \
 	\
 	unsetConfs=' \
 		BR2_SHARED_LIBS \
-		BR2_i386 \
 	'; \
+	\
+	dpkgArch="$(dpkg --print-architecture)"; \
+	case "$dpkgArch" in \
+		amd64) \
+			setConfs="$setConfs BR2_x86_64=y"; \
+			unsetConfs="$unsetConfs BR2_i386"; \
+			;; \
+		i386) \
+			setConfs="$setConfs BR2_i386=y"; \
+			;; \
+		*) \
+			echo >&2 "error: unsupported architecture '$dpkgArch'!"; \
+			exit 1; \
+			;; \
+	esac; \
 	\
 	make defconfig; \
 	\
@@ -93,7 +107,10 @@ RUN set -xe \
 	&& echo "sha256  $UCLIBC_NG_SHA256  uClibc-ng-${UCLIBC_NG_VERSION}.tar.xz" > package/uclibc/uclibc.hash
 
 # http://www.finnie.org/2014/02/13/compiling-busybox-with-uclibc/
-RUN make -C /usr/src/buildroot -j$(nproc) toolchain
+RUN set -ex; \
+# force a particular GNU arch for "host-gmp" (otherwise it fails on some arches)
+	gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \
+	make -C /usr/src/buildroot HOST_GMP_CONF_OPTS="--build='"$gnuArch"'" -j "$(nproc)" toolchain
 ENV PATH /usr/src/buildroot/output/host/usr/bin:$PATH
 
 # pub   1024D/ACC9965B 2006-12-12
