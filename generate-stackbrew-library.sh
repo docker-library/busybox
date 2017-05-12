@@ -1,7 +1,22 @@
 #!/bin/bash
 set -eu
 
-latest='uclibc'
+latest=
+# prefer uclibc, but if it's unavailable use glibc if possible since it's got less "edge case" behavior, especially around DNS
+for try in \
+	uclibc \
+	glibc \
+	musl \
+; do
+	if [ -d "$try" ]; then
+		latest="$try"
+		break
+	fi
+done
+if [ -z "$latest" ]; then
+	echo >&2 'error: cannot determine a good choice for "latest"!'
+	exit 1
+fi
 
 self="$(basename "$BASH_SOURCE")"
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
