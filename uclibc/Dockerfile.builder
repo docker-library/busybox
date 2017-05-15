@@ -27,16 +27,22 @@ RUN apt-get update && apt-get install -y \
 # sub   2048g/45428075 2009-01-15
 RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys AB07D806D2CE741FB886EE50B025BA8B59C36319
 
-ENV BUILDROOT_VERSION 2015.11.1
+# https://buildroot.uclibc.org/download.html
+# https://buildroot.uclibc.org/downloads/?C=M;O=D
+ENV BUILDROOT_VERSION 2017.02.2
 
-RUN set -x \
-	&& mkdir -p /usr/src/buildroot \
-	&& cd /usr/src/buildroot \
-	&& curl -fsSL "http://buildroot.uclibc.org/downloads/buildroot-${BUILDROOT_VERSION}.tar.bz2" -o buildroot.tar.bz2 \
-	&& curl -fsSL "http://buildroot.uclibc.org/downloads/buildroot-${BUILDROOT_VERSION}.tar.bz2.sign" -o buildroot.tar.bz2.sign \
-	&& gpg --verify buildroot.tar.bz2.sign \
-	&& tar -xf buildroot.tar.bz2 --strip-components 1 \
-	&& rm buildroot.tar.bz2*
+RUN set -ex; \
+	tarball="buildroot-${BUILDROOT_VERSION}.tar.bz2"; \
+	curl -fsSL -o buildroot.tar.bz2 "http://buildroot.uclibc.org/downloads/$tarball"; \
+	curl -fsSL -o buildroot.tar.bz2.sign "http://buildroot.uclibc.org/downloads/$tarball.sign"; \
+	gpg --batch --decrypt --output buildroot.tar.bz2.txt buildroot.tar.bz2.sign; \
+	cat buildroot.tar.bz2.txt; \
+	awk '$1 == "SHA1:" && $2 ~ /^[0-9a-f]+$/ && $3 == "'"$tarball"'" { print $2, "*buildroot.tar.bz2" }' buildroot.tar.bz2.txt > buildroot.tar.bz2.sha1; \
+	test -s buildroot.tar.bz2.sha1; \
+	sha1sum -c buildroot.tar.bz2.sha1; \
+	mkdir -p /usr/src/buildroot; \
+	tar -xf buildroot.tar.bz2 -C /usr/src/buildroot --strip-components 1; \
+	rm buildroot.tar.bz2*
 
 RUN set -ex; \
 	\
@@ -53,14 +59,26 @@ RUN set -ex; \
 		BR2_SHARED_LIBS \
 	'; \
 	\
+# buildroot arches: https://git.busybox.net/buildroot/tree/arch
+# buildroot+uclibc arches: https://git.busybox.net/buildroot/tree/toolchain/toolchain-buildroot/Config.in (config BR2_TOOLCHAIN_BUILDROOT_UCLIBC)
 	dpkgArch="$(dpkg --print-architecture)"; \
 	case "$dpkgArch" in \
 		amd64) \
-			setConfs="$setConfs BR2_x86_64=y"; \
+			setConfs="$setConfs \
+				BR2_x86_64=y \
+			"; \
+			unsetConfs="$unsetConfs BR2_i386"; \
+			;; \
+		arm64) \
+			setConfs="$setConfs \
+				BR2_aarch64=y \
+			"; \
 			unsetConfs="$unsetConfs BR2_i386"; \
 			;; \
 		i386) \
-			setConfs="$setConfs BR2_i386=y"; \
+			setConfs="$setConfs \
+				BR2_i386=y \
+			"; \
 			;; \
 		*) \
 			echo >&2 "error: unsupported architecture '$dpkgArch'!"; \
@@ -96,15 +114,6 @@ RUN set -ex; \
 	for confV in $setConfs; do \
 		grep -q "^$confV\$" .config; \
 	done;
-
-ENV UCLIBC_NG_VERSION 1.0.13
-ENV UCLIBC_NG_SHA256 7baae61e243da3ab85e219fead68406995be5eabf889001c0d41676546b19317
-
-RUN set -xe \
-	&& cd /usr/src/buildroot \
-	&& sed -i 's!^BR2_UCLIBC_VERSION_STRING=.*!BR2_UCLIBC_VERSION_STRING="'"$UCLIBC_NG_VERSION"'"!' .config \
-	&& grep -q '^BR2_UCLIBC_VERSION_STRING="'"$UCLIBC_NG_VERSION"'"$' .config \
-	&& echo "sha256  $UCLIBC_NG_SHA256  uClibc-ng-${UCLIBC_NG_VERSION}.tar.xz" > package/uclibc/uclibc.hash
 
 # http://www.finnie.org/2014/02/13/compiling-busybox-with-uclibc/
 RUN set -ex; \
