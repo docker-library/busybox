@@ -93,6 +93,7 @@ RUN set -ex \
 		rootfs/bin/busybox \
 		rootfs/bin/getconf \
 		/lib/"$(gcc -print-multiarch)"/libnss*.so.* \
+# libpthread is part of glibc: http://stackoverflow.com/a/11210463/433558
 		/lib/"$(gcc -print-multiarch)"/libpthread*.so.* \
 	&& while [ "$#" -gt 0 ]; do \
 		f="$1"; shift; \
