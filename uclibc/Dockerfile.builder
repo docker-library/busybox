@@ -143,7 +143,6 @@ RUN set -ex; \
 
 WORKDIR /usr/src/busybox
 
-# TODO remove CONFIG_FEATURE_SYNC_FANCY from this explicit list after the next release of busybox (since it's disabled by default upstream now; 1.27+)
 # CONFIG_LAST_SUPPORTED_WCHAR: see https://github.com/docker-library/busybox/issues/13 (UTF-8 input)
 RUN set -ex; \
 	\

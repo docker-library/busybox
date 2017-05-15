@@ -36,7 +36,6 @@ WORKDIR /usr/src/busybox
 # https://www.mail-archive.com/toybox@lists.landley.net/msg02526.html
 RUN sed -i 's/^struct kconf_id \*$/static &/g' scripts/kconfig/zconf.hash.c_shipped
 
-# TODO remove CONFIG_FEATURE_SYNC_FANCY from this explicit list after the next release of busybox (since it's disabled by default upstream now; 1.27+)
 # CONFIG_LAST_SUPPORTED_WCHAR: see https://github.com/docker-library/busybox/issues/13 (UTF-8 input)
 # see http://wiki.musl-libc.org/wiki/Building_Busybox
 RUN set -ex; \
