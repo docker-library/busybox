@@ -8,7 +8,8 @@ RUN apk add --no-cache \
 		gnupg \
 		linux-headers \
 		make \
-		musl-dev
+		musl-dev \
+		tzdata
 
 # pub   1024D/ACC9965B 2006-12-12
 #       Key fingerprint = C9E9 416F 76E6 10DB D09D  040F 47B7 0C55 ACC9 965B
@@ -131,8 +132,9 @@ RUN set -ex \
 RUN chroot rootfs /bin/sh -xec 'true'
 
 # ensure correct timezone (UTC)
-RUN ln -v /etc/localtime rootfs/etc/ \
-	&& [ "$(chroot rootfs date +%Z)" = 'UTC' ]
+RUN set -ex; \
+	ln -vL /usr/share/zoneinfo/UTC rootfs/etc/localtime; \
+	[ "$(chroot rootfs date +%Z)" = 'UTC' ]
 
 # test and make sure DNS works too
 RUN cp -L /etc/resolv.conf rootfs/etc/ \
