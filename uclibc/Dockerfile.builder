@@ -33,10 +33,9 @@ ENV BUILDROOT_VERSION 2017.02.2
 
 RUN set -ex; \
 	tarball="buildroot-${BUILDROOT_VERSION}.tar.bz2"; \
-	curl -fsSL -o buildroot.tar.bz2 "http://buildroot.uclibc.org/downloads/$tarball"; \
-	curl -fsSL -o buildroot.tar.bz2.sign "http://buildroot.uclibc.org/downloads/$tarball.sign"; \
+	curl -fL -o buildroot.tar.bz2 "https://buildroot.uclibc.org/downloads/$tarball"; \
+	curl -fL -o buildroot.tar.bz2.sign "https://buildroot.uclibc.org/downloads/$tarball.sign"; \
 	gpg --batch --decrypt --output buildroot.tar.bz2.txt buildroot.tar.bz2.sign; \
-	cat buildroot.tar.bz2.txt; \
 	awk '$1 == "SHA1:" && $2 ~ /^[0-9a-f]+$/ && $3 == "'"$tarball"'" { print $2, "*buildroot.tar.bz2" }' buildroot.tar.bz2.txt > buildroot.tar.bz2.sha1; \
 	test -s buildroot.tar.bz2.sha1; \
 	sha1sum -c buildroot.tar.bz2.sha1; \
@@ -126,22 +125,25 @@ ENV PATH /usr/src/buildroot/output/host/usr/bin:$PATH
 #       Key fingerprint = C9E9 416F 76E6 10DB D09D  040F 47B7 0C55 ACC9 965B
 # uid                  Denis Vlasenko <vda.linux@googlemail.com>
 # sub   1024g/2C766641 2006-12-12
-RUN gpg --keyserver pool.sks-keyservers.net --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
+RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
 
 ENV BUSYBOX_VERSION 1.26.2
 
-RUN set -x \
-	&& curl -fsSL "http://busybox.net/downloads/busybox-${BUSYBOX_VERSION}.tar.bz2" -o busybox.tar.bz2 \
-	&& curl -fsSL "http://busybox.net/downloads/busybox-${BUSYBOX_VERSION}.tar.bz2.sign" -o busybox.tar.bz2.sign \
-	&& gpg --verify busybox.tar.bz2.sign \
-	&& tar -xjf busybox.tar.bz2 \
-	&& mkdir -p /usr/src \
-	&& mv "busybox-${BUSYBOX_VERSION}" /usr/src/busybox \
-	&& rm busybox.tar.bz2*
+RUN set -ex; \
+	tarball="busybox-${BUSYBOX_VERSION}.tar.bz2"; \
+	curl -fL -o busybox.tar.bz2 "https://busybox.net/downloads/$tarball"; \
+	curl -fL -o busybox.tar.bz2.sign "https://busybox.net/downloads/$tarball.sign"; \
+	gpg --batch --decrypt --output busybox.tar.bz2.txt busybox.tar.bz2.sign; \
+	awk '$1 == "SHA1:" && $2 ~ /^[0-9a-f]+$/ && $3 == "'"$tarball"'" { print $2, "*busybox.tar.bz2" }' busybox.tar.bz2.txt > busybox.tar.bz2.sha1; \
+	test -s busybox.tar.bz2.sha1; \
+	sha1sum -c busybox.tar.bz2.sha1; \
+	mkdir -p /usr/src/busybox; \
+	tar -xf busybox.tar.bz2 -C /usr/src/busybox --strip-components 1; \
+	rm busybox.tar.bz2*
 
 WORKDIR /usr/src/busybox
 
-# TODO remove CONFIG_FEATURE_SYNC_FANCY from this explicit list after the next release of busybox (since it's disabled by default upstream now)
+# TODO remove CONFIG_FEATURE_SYNC_FANCY from this explicit list after the next release of busybox (since it's disabled by default upstream now; 1.27+)
 # CONFIG_LAST_SUPPORTED_WCHAR: see https://github.com/docker-library/busybox/issues/13 (UTF-8 input)
 RUN set -ex; \
 	\
@@ -196,11 +198,13 @@ RUN set -ex \
 	\
 	&& ln -vL ../buildroot/output/target/usr/bin/getconf rootfs/bin/ \
 	\
+	&& chroot rootfs /bin/getconf _NPROCESSORS_ONLN \
+	\
 	&& chroot rootfs /bin/busybox --install /bin
 
-RUN set -ex \
-	&& mkdir -p rootfs/etc \
-	&& for f in passwd shadow group; do \
+RUN set -ex; \
+	mkdir -p rootfs/etc; \
+	for f in passwd shadow group; do \
 		ln -vL \
 			"../buildroot/system/skeleton/etc/$f" \
 			"rootfs/etc/$f"; \
