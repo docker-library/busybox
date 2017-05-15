@@ -19,5 +19,6 @@ for version in "${versions[@]}"; do
 		docker build -t "$base$version" "$version"
 		docker run --rm "$base$version" sh -xec 'true'
 		docker run --rm "$base$version" ping -c 1 google.com
+		docker images "$base$version"
 	)
 done
