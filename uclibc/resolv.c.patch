@@ -1,0 +1,20 @@
+diff --git a/libc/inet/resolv.c b/libc/inet/resolv.c
+index 4b33896..a6cc00e 100644
+--- a/libc/inet/resolv.c
++++ b/libc/inet/resolv.c
+@@ -1320,7 +1320,6 @@ int __dns_lookup(const char *name,
+ 				local_ns_num = last_ns_num;
+ 			retries_left = __nameservers * __resolv_attempts;
+ 		}
+-		retries_left--;
+ 		if (local_ns_num >= __nameservers)
+ 			local_ns_num = 0;
+ 		local_id++;
+@@ -1572,6 +1571,7 @@ int __dns_lookup(const char *name,
+ 
+  try_next_server:
+ 		/* Try next nameserver */
++               retries_left--;
+ 		local_ns_num++;
+ 		variant = -1;
+ 	} while (retries_left > 0);
