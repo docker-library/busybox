@@ -18,7 +18,9 @@ for version in "${versions[@]}"; do
 		docker run --rm "$base$version-builder" tar cC rootfs . | xz -z9 > "$version/busybox.tar.xz"
 		docker build -t "$base$version" "$version"
 		docker run --rm "$base$version" sh -xec 'true'
-		docker run --rm "$base$version" ping -c 1 google.com
+		if ! docker run --rm "$base$version" ping -c 1 google.com; then
+			docker run --rm "$base$version" ping -c 1 google.com
+		fi
 		docker images "$base$version"
 	)
 done
