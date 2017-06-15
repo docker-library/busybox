@@ -1,6 +1,10 @@
 language: bash
 services: docker
 
+branches:
+  except:
+    - /dist.*/
+
 env:
   - VERSION=glibc
   - VERSION=musl
