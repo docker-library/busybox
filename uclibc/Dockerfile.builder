@@ -59,31 +59,69 @@ RUN set -ex; \
 	'; \
 	\
 # buildroot arches: https://git.busybox.net/buildroot/tree/arch
-# buildroot+uclibc arches: https://git.busybox.net/buildroot/tree/toolchain/toolchain-buildroot/Config.in (config BR2_TOOLCHAIN_BUILDROOT_UCLIBC)
+# buildroot+uclibc arches: https://git.busybox.net/buildroot/tree/toolchain/toolchain-buildroot/Config.in ("config BR2_TOOLCHAIN_BUILDROOT_UCLIBC")
 	dpkgArch="$(dpkg --print-architecture)"; \
 	case "$dpkgArch" in \
 		amd64) \
 			setConfs="$setConfs \
 				BR2_x86_64=y \
 			"; \
-			unsetConfs="$unsetConfs BR2_i386"; \
 			;; \
+			\
 		arm64) \
 			setConfs="$setConfs \
 				BR2_aarch64=y \
 			"; \
-			unsetConfs="$unsetConfs BR2_i386"; \
 			;; \
+			\
+# https://wiki.debian.org/ArmEabiPort#Choice_of_minimum_CPU
+# https://github.com/free-electrons/toolchains-builder/blob/db259641eaf5bbcf13f4a3c5003e5436e806770c/configs/arch/armv5-eabi.config
+# https://git.busybox.net/buildroot/tree/arch/Config.in.arm
+# (Debian minimums at ARMv4, we minimum at ARMv5 instead)
+		armel) \
+			setConfs="$setConfs \
+				BR2_arm=y \
+				BR2_arm926t=y \
+				BR2_ARM_EABI=y \
+				BR2_ARM_INSTRUCTIONS_THUMB=y \
+				BR2_ARM_SOFT_FLOAT=y \
+			"; \
+			;; \
+			\
+# "Currently the Debian armhf port requires at least an ARMv7 CPU with Thumb-2 and VFP3D16."
+# https://wiki.debian.org/ArmHardFloatPort#Supported_devices
+# https://github.com/free-electrons/toolchains-builder/blob/db259641eaf5bbcf13f4a3c5003e5436e806770c/configs/arch/armv7-eabihf.config
+# https://git.busybox.net/buildroot/tree/arch/Config.in.arm
+		armhf) \
+			setConfs="$setConfs \
+				BR2_arm=y \
+				BR2_cortex_a9=y \
+				BR2_ARM_EABIHF=y \
+				BR2_ARM_ENABLE_VFP=y \
+				BR2_ARM_FPU_VFPV3D16=y \
+				BR2_ARM_INSTRUCTIONS_THUMB2=y \
+			"; \
+			unsetConfs="$unsetConfs BR2_ARM_SOFT_FLOAT"; \
+			;; \
+			\
 		i386) \
 			setConfs="$setConfs \
 				BR2_i386=y \
 			"; \
 			;; \
+			\
+# TODO ppc64el ? (needs BR2_TOOLCHAIN_BUILDROOT_UCLIBC support)
+			\
+# TODO s390x ? (needs BR2_TOOLCHAIN_BUILDROOT_UCLIBC support)
+			\
 		*) \
 			echo >&2 "error: unsupported architecture '$dpkgArch'!"; \
 			exit 1; \
 			;; \
 	esac; \
+	if [ "$dpkgArch" != 'i386' ]; then \
+		unsetConfs="$unsetConfs BR2_i386"; \
+	fi; \
 	\
 	make defconfig; \
 	\
