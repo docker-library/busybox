@@ -1,9 +1,10 @@
-FROM debian:jessie-slim
+FROM debian:stretch-slim
 
 RUN apt-get update && apt-get install -y \
 		bzip2 \
 		curl \
 		gcc \
+		gnupg2 dirmngr \
 		make \
 		\
 # buildroot
@@ -268,7 +269,7 @@ RUN set -ex \
 RUN chroot rootfs /bin/sh -xec 'true'
 
 # ensure correct timezone (UTC)
-RUN ln -v /etc/localtime rootfs/etc/ \
+RUN ln -vL /etc/localtime rootfs/etc/ \
 	&& [ "$(chroot rootfs date +%Z)" = 'UTC' ]
 
 # test and make sure DNS works too
