@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y \
 		bzip2 \
 		curl \
 		gcc \
-		gnupg2 dirmngr \
+		gnupg dirmngr \
 		make \
 		\
 # buildroot
