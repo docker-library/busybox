@@ -246,7 +246,11 @@ RUN set -ex; \
 		ln -vL \
 			"../buildroot/system/skeleton/etc/$f" \
 			"rootfs/etc/$f"; \
-	done
+	done; \
+# https://git.busybox.net/buildroot/tree/system/device_table.txt
+	chmod 755 /etc; \
+	chmod 600 /etc/shadow; \
+	chmod 644 /etc/passwd
 
 # create /tmp
 RUN mkdir -p rootfs/tmp \

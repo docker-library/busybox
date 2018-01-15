@@ -109,7 +109,11 @@ RUN set -ex; \
 	mkdir -p rootfs/etc; \
 	for f in passwd shadow group; do \
 		curl -fL -o "rootfs/etc/$f" "https://git.busybox.net/buildroot/plain/system/skeleton/etc/$f?id=$buildrootVersion"; \
-	done
+	done; \
+# https://git.busybox.net/buildroot/tree/system/device_table.txt
+	chmod 755 /etc; \
+	chmod 600 /etc/shadow; \
+	chmod 644 /etc/passwd
 
 # create /tmp
 RUN mkdir -p rootfs/tmp \
