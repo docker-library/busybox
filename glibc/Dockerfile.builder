@@ -117,20 +117,29 @@ RUN set -ex \
 	\
 	&& chroot rootfs /bin/busybox --install /bin
 
+# download a few extra files from buildroot (/etc/passwd, etc)
 RUN set -ex; \
 	buildrootVersion='2017.02.2'; \
 	mkdir -p rootfs/etc; \
 	for f in passwd shadow group; do \
 		curl -fL -o "rootfs/etc/$f" "https://git.busybox.net/buildroot/plain/system/skeleton/etc/$f?id=$buildrootVersion"; \
 	done; \
-# https://git.busybox.net/buildroot/tree/system/device_table.txt
-	chmod 755 /etc; \
-	chmod 600 /etc/shadow; \
-	chmod 644 /etc/passwd
-
-# create /tmp
-RUN mkdir -p rootfs/tmp \
-	&& chmod 1777 rootfs/tmp
+# set expected permissions, etc too (https://git.busybox.net/buildroot/tree/system/device_table.txt)
+	curl -fL -o buildroot-device-table.txt "https://git.busybox.net/buildroot/plain/system/device_table.txt?id=$buildrootVersion"; \
+	awk ' \
+		!/^#/ { \
+			if ($2 != "d" && $2 != "f") { \
+				printf "error: unknown type \"%s\" encountered in line %d: %s\n", $2, NR, $0 > "/dev/stderr"; \
+				exit 1; \
+			} \
+			sub(/^\/?/, "rootfs/", $1); \
+			if ($2 == "d") { \
+				printf "mkdir -p %s\n", $1; \
+			} \
+			printf "chmod %s %s\n", $3, $1; \
+		} \
+	' buildroot-device-table.txt | bash -Eeuo pipefail -x; \
+	rm buildroot-device-table.txt
 
 # create missing home directories
 RUN set -ex \
@@ -142,6 +151,7 @@ RUN set -ex \
 		if [ ! -d "$home" ]; then \
 			mkdir -p "$home"; \
 			chown "$user" "$home"; \
+			chmod 755 "$home"; \
 		fi; \
 	done
 
@@ -149,8 +159,9 @@ RUN set -ex \
 RUN chroot rootfs /bin/sh -xec 'true'
 
 # ensure correct timezone (UTC)
-RUN ln -vL /etc/localtime rootfs/etc/ \
-	&& [ "$(chroot rootfs date +%Z)" = 'UTC' ]
+RUN set -ex; \
+	ln -vL /usr/share/zoneinfo/UTC rootfs/etc/localtime; \
+	[ "$(chroot rootfs date +%Z)" = 'UTC' ]
 
 # test and make sure DNS works too
 RUN cp -L /etc/resolv.conf rootfs/etc/ \
