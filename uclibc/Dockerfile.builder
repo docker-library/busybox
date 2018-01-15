@@ -30,7 +30,7 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys AB07D806D2CE741FB886E
 
 # https://buildroot.uclibc.org/download.html
 # https://buildroot.uclibc.org/downloads/?C=M;O=D
-ENV BUILDROOT_VERSION 2017.02.2
+ENV BUILDROOT_VERSION 2017.11.1
 
 RUN set -ex; \
 	tarball="buildroot-${BUILDROOT_VERSION}.tar.bz2"; \
@@ -50,7 +50,6 @@ RUN set -ex; \
 	\
 	setConfs=' \
 		BR2_STATIC_LIBS=y \
-		BR2_TOOLCHAIN_BUILDROOT_INET_RPC=y \
 		BR2_TOOLCHAIN_BUILDROOT_UCLIBC=y \
 		BR2_TOOLCHAIN_BUILDROOT_WCHAR=y \
 	'; \
