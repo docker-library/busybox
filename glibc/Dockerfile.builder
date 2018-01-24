@@ -12,7 +12,9 @@ RUN apt-get update && apt-get install -y \
 #       Key fingerprint = C9E9 416F 76E6 10DB D09D  040F 47B7 0C55 ACC9 965B
 # uid                  Denis Vlasenko <vda.linux@googlemail.com>
 # sub   1024g/2C766641 2006-12-12
-RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
+RUN ( gpg --keyserver ha.pool.sks-keyservers.net --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B \
+|| gpg --keyserver pgp.mit.edu --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B \
+|| gpg --keyserver keyserver.pgp.com --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B )
 
 ENV BUSYBOX_VERSION 1.28.0
 
