@@ -36,7 +36,7 @@ cat <<-EOH
 
 Maintainers: Tianon Gravi <admwiggin@gmail.com> (@tianon),
              Joseph Ferguson <yosifkit@gmail.com> (@yosifkit),
-             Jérôme Petazzoni <jerome@docker.com> (@jpetazzo)
+             Jérôme Petazzoni <jerome.petazzoni@gmail.com> (@jpetazzo)
 GitRepo: $gitHubUrl.git
 GitCommit: $selfCommit
 EOH
