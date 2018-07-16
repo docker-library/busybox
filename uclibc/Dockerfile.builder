@@ -170,11 +170,8 @@ ENV BUSYBOX_VERSION 1.29.1
 RUN set -ex; \
 	tarball="busybox-${BUSYBOX_VERSION}.tar.bz2"; \
 	curl -fL -o busybox.tar.bz2 "https://busybox.net/downloads/$tarball"; \
-	curl -fL -o busybox.tar.bz2.sign "https://busybox.net/downloads/$tarball.sign"; \
-	gpg --batch --decrypt --output busybox.tar.bz2.txt busybox.tar.bz2.sign; \
-	awk '$1 == "SHA1:" && $2 ~ /^[0-9a-f]+$/ && $3 == "'"$tarball"'" { print $2, "*busybox.tar.bz2" }' busybox.tar.bz2.txt > busybox.tar.bz2.sha1; \
-	test -s busybox.tar.bz2.sha1; \
-	sha1sum -c busybox.tar.bz2.sha1; \
+	curl -fL -o busybox.tar.bz2.sig "https://busybox.net/downloads/$tarball.sig"; \
+	gpg --batch --verify busybox.tar.bz2.sig busybox.tar.bz2; \
 	mkdir -p /usr/src/busybox; \
 	tar -xf busybox.tar.bz2 -C /usr/src/busybox --strip-components 1; \
 	rm busybox.tar.bz2*
