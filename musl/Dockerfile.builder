@@ -21,7 +21,7 @@ RUN apk add --no-cache \
 # sub   1024g/2C766641 2006-12-12
 RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
 
-ENV BUSYBOX_VERSION 1.28.4
+ENV BUSYBOX_VERSION 1.29.1
 
 RUN set -ex; \
 	tarball="busybox-${BUSYBOX_VERSION}.tar.bz2"; \
