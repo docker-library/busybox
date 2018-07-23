@@ -15,11 +15,18 @@ install:
 
 before_script:
   - env | sort
+  - wget -qO- 'https://github.com/tianon/pgp-happy-eyeballs/raw/master/hack-my-builds.sh' | bash
   - image="busybox:$VERSION"
 
 script:
-  - travis_retry ./build.sh "$VERSION"
-  - ~/official-images/test/run.sh "$image"
+  - |
+    (
+      set -Eeuo pipefail
+      set -x
+      ./build.sh "$VERSION"
+      docker build -t "$image" "$VERSION"
+      ~/official-images/test/run.sh "$image"
+    )
 
 after_script:
   - docker images
