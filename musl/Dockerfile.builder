@@ -100,7 +100,7 @@ RUN set -ex \
 RUN set -x \
 	&& aportsVersion="v$(cat /etc/alpine-release)" \
 	&& curl -fsSL \
-		"http://git.alpinelinux.org/cgit/aports/plain/main/musl/getconf.c?h=${aportsVersion}" \
+		"https://git.alpinelinux.org/cgit/aports/plain/main/musl/getconf.c?h=${aportsVersion}" \
 		-o /usr/src/getconf.c \
 	&& gcc -o rootfs/bin/getconf -static -Os /usr/src/getconf.c \
 	&& chroot rootfs /bin/getconf _NPROCESSORS_ONLN
