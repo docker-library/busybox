@@ -30,7 +30,7 @@ RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys AB07D806D2CE741FB886E
 
 # https://buildroot.uclibc.org/download.html
 # https://buildroot.uclibc.org/downloads/?C=M;O=D
-ENV BUILDROOT_VERSION 2018.05.1
+ENV BUILDROOT_VERSION 2018.08
 
 RUN set -ex; \
 	tarball="buildroot-${BUILDROOT_VERSION}.tar.bz2"; \
