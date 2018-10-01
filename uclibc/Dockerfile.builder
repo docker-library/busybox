@@ -28,14 +28,14 @@ RUN apt-get update && apt-get install -y \
 # sub   2048g/45428075 2009-01-15
 RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys AB07D806D2CE741FB886EE50B025BA8B59C36319
 
-# https://buildroot.uclibc.org/download.html
-# https://buildroot.uclibc.org/downloads/?C=M;O=D
+# https://buildroot.org/download.html
+# https://buildroot.org/downloads/?C=M;O=D
 ENV BUILDROOT_VERSION 2018.08
 
 RUN set -ex; \
 	tarball="buildroot-${BUILDROOT_VERSION}.tar.bz2"; \
-	curl -fL -o buildroot.tar.bz2 "https://buildroot.uclibc.org/downloads/$tarball"; \
-	curl -fL -o buildroot.tar.bz2.sign "https://buildroot.uclibc.org/downloads/$tarball.sign"; \
+	curl -fL -o buildroot.tar.bz2 "https://buildroot.org/downloads/$tarball"; \
+	curl -fL -o buildroot.tar.bz2.sign "https://buildroot.org/downloads/$tarball.sign"; \
 	gpg --batch --decrypt --output buildroot.tar.bz2.txt buildroot.tar.bz2.sign; \
 	awk '$1 == "SHA1:" && $2 ~ /^[0-9a-f]+$/ && $3 == "'"$tarball"'" { print $2, "*buildroot.tar.bz2" }' buildroot.tar.bz2.txt > buildroot.tar.bz2.sha1; \
 	test -s buildroot.tar.bz2.sha1; \
