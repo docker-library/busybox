@@ -5,8 +5,7 @@ self="$(basename "$BASH_SOURCE")"
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
 gitHubUrl='https://github.com/docker-library/busybox'
-#rawGitUrl="$gitHubUrl/raw"
-rawGitUrl="${gitHubUrl//github.com/cdn.rawgit.com}" # we grab a lot of tiny files, and rawgit's CDN is more consistently speedy on a cache hit than GitHub's
+rawGitUrl="$gitHubUrl/raw"
 
 # prefer uclibc, but if it's unavailable use glibc if possible since it's got less "edge case" behavior, especially around DNS
 variants=(
