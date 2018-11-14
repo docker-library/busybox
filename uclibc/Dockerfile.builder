@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y \
 #       Key fingerprint = AB07 D806 D2CE 741F B886  EE50 B025 BA8B 59C3 6319
 # uid                  Peter Korsgaard <jacmet@uclibc.org>
 # sub   2048g/45428075 2009-01-15
-RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys AB07D806D2CE741FB886EE50B025BA8B59C36319
+RUN gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys AB07D806D2CE741FB886EE50B025BA8B59C36319
 
 # https://buildroot.org/download.html
 # https://buildroot.org/downloads/?C=M;O=D
@@ -163,7 +163,7 @@ ENV PATH /usr/src/buildroot/output/host/usr/bin:$PATH
 #       Key fingerprint = C9E9 416F 76E6 10DB D09D  040F 47B7 0C55 ACC9 965B
 # uid                  Denis Vlasenko <vda.linux@googlemail.com>
 # sub   1024g/2C766641 2006-12-12
-RUN gpg --keyserver ha.pool.sks-keyservers.net --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
+RUN gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
 
 ENV BUSYBOX_VERSION 1.29.3
 
