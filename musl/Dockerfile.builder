@@ -107,7 +107,7 @@ RUN set -x \
 
 # download a few extra files from buildroot (/etc/passwd, etc)
 RUN set -ex; \
-	buildrootVersion='2018.08'; \
+	buildrootVersion='2018.11.1'; \
 	mkdir -p rootfs/etc; \
 	for f in passwd shadow group; do \
 		curl -fL -o "rootfs/etc/$f" "https://git.busybox.net/buildroot/plain/system/skeleton/etc/$f?id=$buildrootVersion"; \
