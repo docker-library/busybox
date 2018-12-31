@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
 # sub   1024g/2C766641 2006-12-12
 RUN gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
 
-ENV BUSYBOX_VERSION 1.29.3
+ENV BUSYBOX_VERSION 1.30.0
 
 RUN set -ex; \
 	tarball="busybox-${BUSYBOX_VERSION}.tar.bz2"; \
