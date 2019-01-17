@@ -5,15 +5,11 @@ RUN apk add --no-cache \
 		coreutils \
 		curl \
 		gcc \
+		gnupg \
 		linux-headers \
 		make \
 		musl-dev \
-		tzdata \
-		\
-# explicitly using gnupg1 instead of gnupg (which is 2.x) due to an arm32v6 bug (likely related to our arm64v8 hardware)
-# SIGILL {si_signo=SIGILL, si_code=ILL_ILLOPC, si_addr=0xf7b79394} ---
-# (in dirmngr)
-		gnupg1
+		tzdata
 
 # pub   1024D/ACC9965B 2006-12-12
 #       Key fingerprint = C9E9 416F 76E6 10DB D09D  040F 47B7 0C55 ACC9 965B
