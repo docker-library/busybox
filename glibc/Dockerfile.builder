@@ -121,6 +121,10 @@ RUN set -ex; \
 	for f in passwd shadow group; do \
 		curl -fL -o "rootfs/etc/$f" "https://git.busybox.net/buildroot/plain/system/skeleton/etc/$f?id=$buildrootVersion"; \
 	done; \
+# CVE-2019-5021, https://github.com/docker-library/official-images/pull/5880#issuecomment-490681907
+	grep -E '^root::' rootfs/etc/shadow; \
+	sed -ri -e 's/^root::/root:*:/' rootfs/etc/shadow; \
+	grep -E '^root:[*]:' rootfs/etc/shadow; \
 # set expected permissions, etc too (https://git.busybox.net/buildroot/tree/system/device_table.txt)
 	curl -fL -o buildroot-device-table.txt "https://git.busybox.net/buildroot/plain/system/device_table.txt?id=$buildrootVersion"; \
 	awk ' \
