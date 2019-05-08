@@ -244,6 +244,10 @@ RUN set -ex; \
 			"../buildroot/system/skeleton/etc/$f" \
 			"rootfs/etc/$f"; \
 	done; \
+# CVE-2019-5021, https://github.com/docker-library/official-images/pull/5880#issuecomment-490681907
+	grep -E '^root::' rootfs/etc/shadow; \
+	sed -ri -e 's/^root::/root:*:/' rootfs/etc/shadow; \
+	grep -E '^root:[*]:' rootfs/etc/shadow; \
 # set expected permissions, etc too (https://git.busybox.net/buildroot/tree/system/device_table.txt)
 	awk ' \
 		!/^#/ { \
@@ -257,7 +261,7 @@ RUN set -ex; \
 			} \
 			printf "chmod %s %s\n", $3, $1; \
 		} \
-	' "../buildroot/system/device_table.txt" | bash -Eeuo pipefail -x
+	' ../buildroot/system/device_table.txt | bash -Eeuo pipefail -x
 
 # create missing home directories
 RUN set -ex \
