@@ -1,0 +1,69 @@
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/build/triggers
+trigger:
+  batch: true
+  branches:
+    include:
+      - '*'
+    exclude:
+      - 'dist*'
+schedules:
+  - cron: '0 0 * * 0'
+    displayName: 'Weekly build'
+    branches:
+      include:
+        - master
+    always: true
+
+strategy:
+  matrix:
+    glibc:
+      azureImage: 'ubuntu-latest'
+      buildContext: glibc
+    musl:
+      azureImage: 'ubuntu-latest'
+      buildContext: musl
+    uclibc:
+      azureImage: 'ubuntu-latest'
+      buildContext: uclibc
+
+pool:
+  vmImage: $(azureImage)
+
+steps:
+- bash: |
+    set -Eeuo pipefail -x
+    #git clone --depth 1 https://github.com/docker-library/official-images.git ~/oi
+    git clone --depth 1 https://github.com/tianon/stackbrew.git -b azure ~/oi
+    ~/oi/.azure/wait-for-docker.sh
+    ~/oi/.azure/set-docker-tag.sh
+  displayName: 'Prepare environment'
+
+- bash: |
+    set -Eeuo pipefail -x
+    source <(wget -qO- 'https://github.com/tianon/pgp-happy-eyeballs/raw/master/hack-my-builds.sh')
+  displayName: 'Apply pgp-happy-eyeballs'
+  condition: eq( variables['Agent.OS'], 'Linux' )
+
+- bash: |
+    set -Eeuo pipefail -x
+    ./build.sh '$(buildContext)'
+  displayName: './build.sh $(buildContext)'
+
+- bash: |
+    set -Eeuo pipefail -x
+    docker build -t '$(dockerTag)' .
+  workingDirectory: $(buildContext)
+  displayName: '"docker build"'
+
+- bash: |
+    set -Eeuo pipefail -x
+    docker run --rm '$(dockerTag)' busybox --help
+  displayName: 'Basic smoke test'
+
+- bash: |
+    set -Eeuo pipefail -x
+    ~/oi/test/run.sh '$(dockerTag)'
+  displayName: 'Run tests'
+  condition: eq( variables['Agent.OS'], 'Linux' )
+
+# vim:set tabstop=2 shiftwidth=2:
