@@ -95,7 +95,7 @@ RUN set -ex \
 		/lib/"$(gcc -print-multiarch)"/libpthread*.so.* \
 	&& while [ "$#" -gt 0 ]; do \
 		f="$1"; shift; \
-		fn="$(basename "$f")"; \ 
+		fn="$(basename "$f")"; \
 		if [ -e "rootfs/lib/$fn" ]; then continue; fi; \
 		if [ "${f#rootfs/}" = "$f" ]; then \
 			if [ "${fn#ld-}" = "$fn" ]; then \
