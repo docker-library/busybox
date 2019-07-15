@@ -19,7 +19,7 @@ RUN gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys C9E9416F76E61
 
 ENV BUSYBOX_VERSION 1.31.0
 
-RUN set -ex; \
+RUN set -eux; \
 	tarball="busybox-${BUSYBOX_VERSION}.tar.bz2"; \
 	curl -fL -o busybox.tar.bz2 "https://busybox.net/downloads/$tarball"; \
 	curl -fL -o busybox.tar.bz2.sig "https://busybox.net/downloads/$tarball.sig"; \
@@ -36,7 +36,7 @@ RUN sed -i 's/^struct kconf_id \*$/static &/g' scripts/kconfig/zconf.hash.c_ship
 
 # CONFIG_LAST_SUPPORTED_WCHAR: see https://github.com/docker-library/busybox/issues/13 (UTF-8 input)
 # see http://wiki.musl-libc.org/wiki/Building_Busybox
-RUN set -ex; \
+RUN set -eux; \
 	\
 	setConfs=' \
 		CONFIG_AR=y \
@@ -84,26 +84,28 @@ RUN set -ex; \
 		grep -q "^$confV\$" .config; \
 	done;
 
-RUN set -ex \
-	&& make -j "$(nproc)" \
+RUN set -eux; \
+	make -j "$(nproc)" \
 		busybox \
-	&& ./busybox --help \
-	&& mkdir -p rootfs/bin \
-	&& ln -vL busybox rootfs/bin/ \
-	&& chroot rootfs /bin/busybox --install /bin
+	; \
+	./busybox --help; \
+	mkdir -p rootfs/bin; \
+	ln -vL busybox rootfs/bin/; \
+	chroot rootfs /bin/busybox --install /bin
 
 # grab a simplified getconf port from Alpine we can statically compile
-RUN set -x \
-	&& aportsVersion="v$(cat /etc/alpine-release)" \
-	&& curl -fsSL \
+RUN set -eux; \
+	aportsVersion="v$(cat /etc/alpine-release)"; \
+	curl -fsSL \
 		"https://git.alpinelinux.org/cgit/aports/plain/main/musl/getconf.c?h=${aportsVersion}" \
 		-o /usr/src/getconf.c \
-	&& gcc -o rootfs/bin/getconf -static -Os /usr/src/getconf.c \
-	&& chroot rootfs /bin/getconf _NPROCESSORS_ONLN
+	; \
+	gcc -o rootfs/bin/getconf -static -Os /usr/src/getconf.c; \
+	chroot rootfs /bin/getconf _NPROCESSORS_ONLN
 
 # download a few extra files from buildroot (/etc/passwd, etc)
-RUN set -ex; \
-	buildrootVersion='2019.05'; \
+RUN set -eux; \
+	buildrootVersion='2019.05.1'; \
 	mkdir -p rootfs/etc; \
 	for f in passwd shadow group; do \
 		curl -fL -o "rootfs/etc/$f" "https://git.busybox.net/buildroot/plain/system/skeleton/etc/$f?id=$buildrootVersion"; \
@@ -130,9 +132,9 @@ RUN set -ex; \
 	rm buildroot-device-table.txt
 
 # create missing home directories
-RUN set -ex \
-	&& cd rootfs \
-	&& for userHome in $(awk -F ':' '{ print $3 ":" $4 "=" $6 }' etc/passwd); do \
+RUN set -eux; \
+	cd rootfs; \
+	for userHome in $(awk -F ':' '{ print $3 ":" $4 "=" $6 }' etc/passwd); do \
 		user="${userHome%%=*}"; \
 		home="${userHome#*=}"; \
 		home="./${home#/}"; \
@@ -147,11 +149,11 @@ RUN set -ex \
 RUN chroot rootfs /bin/sh -xec 'true'
 
 # ensure correct timezone (UTC)
-RUN set -ex; \
+RUN set -eux; \
 	ln -vL /usr/share/zoneinfo/UTC rootfs/etc/localtime; \
 	[ "$(chroot rootfs date +%Z)" = 'UTC' ]
 
 # test and make sure DNS works too
-RUN cp -L /etc/resolv.conf rootfs/etc/ \
-	&& chroot rootfs /bin/sh -xec 'nslookup google.com' \
-	&& rm rootfs/etc/resolv.conf
+RUN cp -L /etc/resolv.conf rootfs/etc/; \
+	chroot rootfs /bin/sh -xec 'nslookup google.com'; \
+	rm rootfs/etc/resolv.conf

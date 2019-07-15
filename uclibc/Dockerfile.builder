@@ -1,6 +1,8 @@
-FROM debian:stretch-slim
+FROM debian:buster-slim
 
-RUN apt-get update && apt-get install -y \
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y \
 		bzip2 \
 		curl \
 		gcc \
@@ -18,7 +20,8 @@ RUN apt-get update && apt-get install -y \
 		rsync \
 		unzip \
 		wget \
-	&& rm -rf /var/lib/apt/lists/*
+	; \
+	rm -rf /var/lib/apt/lists/*
 
 # we grab buildroot for it's uClibc toolchain
 
@@ -30,9 +33,9 @@ RUN gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys AB07D806D2CE7
 
 # https://buildroot.org/download.html
 # https://buildroot.org/downloads/?C=M;O=D
-ENV BUILDROOT_VERSION 2019.05
+ENV BUILDROOT_VERSION 2019.05.1
 
-RUN set -ex; \
+RUN set -eux; \
 	tarball="buildroot-${BUILDROOT_VERSION}.tar.bz2"; \
 	curl -fL -o buildroot.tar.bz2 "https://buildroot.org/downloads/$tarball"; \
 	curl -fL -o buildroot.tar.bz2.sign "https://buildroot.org/downloads/$tarball.sign"; \
@@ -44,7 +47,7 @@ RUN set -ex; \
 	tar -xf buildroot.tar.bz2 -C /usr/src/buildroot --strip-components 1; \
 	rm buildroot.tar.bz2*
 
-RUN set -ex; \
+RUN set -eux; \
 	\
 	cd /usr/src/buildroot; \
 	\
@@ -153,10 +156,16 @@ RUN set -ex; \
 	done;
 
 # http://www.finnie.org/2014/02/13/compiling-busybox-with-uclibc/
-RUN set -ex; \
+RUN set -eux; \
 # force a particular GNU arch for "host-gmp" (otherwise it fails on some arches)
 	gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \
-	make -C /usr/src/buildroot HOST_GMP_CONF_OPTS="--build='"$gnuArch"'" -j "$(nproc)" toolchain
+	make -C /usr/src/buildroot \
+		HOST_GMP_CONF_OPTS="--build='"$gnuArch"'" \
+# building host-tar:
+#   configure: error: you should not run configure as root (set FORCE_UNSAFE_CONFIGURE=1 in environment to bypass this check)
+		FORCE_UNSAFE_CONFIGURE=1 \
+		-j "$(nproc)" \
+		toolchain
 ENV PATH /usr/src/buildroot/output/host/usr/bin:$PATH
 
 # pub   1024D/ACC9965B 2006-12-12
@@ -167,7 +176,7 @@ RUN gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys C9E9416F76E61
 
 ENV BUSYBOX_VERSION 1.31.0
 
-RUN set -ex; \
+RUN set -eux; \
 	tarball="busybox-${BUSYBOX_VERSION}.tar.bz2"; \
 	curl -fL -o busybox.tar.bz2 "https://busybox.net/downloads/$tarball"; \
 	curl -fL -o busybox.tar.bz2.sig "https://busybox.net/downloads/$tarball.sig"; \
@@ -179,7 +188,7 @@ RUN set -ex; \
 WORKDIR /usr/src/busybox
 
 # CONFIG_LAST_SUPPORTED_WCHAR: see https://github.com/docker-library/busybox/issues/13 (UTF-8 input)
-RUN set -ex; \
+RUN set -eux; \
 	\
 	setConfs=' \
 		CONFIG_AR=y \
@@ -222,22 +231,23 @@ RUN set -ex; \
 		grep -q "^$confV\$" .config; \
 	done;
 
-RUN set -ex \
-	&& make -j "$(nproc)" \
+RUN set -eux; \
+	make -j "$(nproc)" \
 		CROSS_COMPILE="$(basename /usr/src/buildroot/output/host/usr/*-buildroot-linux-uclibc*)-" \
 		busybox \
-	&& ./busybox --help \
-	&& mkdir -p rootfs/bin \
-	&& ln -vL busybox rootfs/bin/ \
+	; \
+	./busybox --help; \
+	mkdir -p rootfs/bin; \
+	ln -vL busybox rootfs/bin/; \
 	\
-	&& ln -vL ../buildroot/output/target/usr/bin/getconf rootfs/bin/ \
+	ln -vL ../buildroot/output/target/usr/bin/getconf rootfs/bin/; \
 	\
-	&& chroot rootfs /bin/getconf _NPROCESSORS_ONLN \
+	chroot rootfs /bin/getconf _NPROCESSORS_ONLN; \
 	\
-	&& chroot rootfs /bin/busybox --install /bin
+	chroot rootfs /bin/busybox --install /bin
 
 # install a few extra files from buildroot (/etc/passwd, etc)
-RUN set -ex; \
+RUN set -eux; \
 	mkdir -p rootfs/etc; \
 	for f in passwd shadow group; do \
 		ln -vL \
@@ -264,9 +274,9 @@ RUN set -ex; \
 	' ../buildroot/system/device_table.txt | bash -Eeuo pipefail -x
 
 # create missing home directories
-RUN set -ex \
-	&& cd rootfs \
-	&& for userHome in $(awk -F ':' '{ print $3 ":" $4 "=" $6 }' etc/passwd); do \
+RUN set -eux; \
+	cd rootfs; \
+	for userHome in $(awk -F ':' '{ print $3 ":" $4 "=" $6 }' etc/passwd); do \
 		user="${userHome%%=*}"; \
 		home="${userHome#*=}"; \
 		home="./${home#/}"; \
@@ -281,11 +291,11 @@ RUN set -ex \
 RUN chroot rootfs /bin/sh -xec 'true'
 
 # ensure correct timezone (UTC)
-RUN set -ex; \
+RUN set -eux; \
 	ln -vL /usr/share/zoneinfo/UTC rootfs/etc/localtime; \
 	[ "$(chroot rootfs date +%Z)" = 'UTC' ]
 
 # test and make sure DNS works too
-RUN cp -L /etc/resolv.conf rootfs/etc/ \
-	&& chroot rootfs /bin/sh -xec 'nslookup google.com' \
-	&& rm rootfs/etc/resolv.conf
+RUN cp -L /etc/resolv.conf rootfs/etc/; \
+	chroot rootfs /bin/sh -xec 'nslookup google.com'; \
+	rm rootfs/etc/resolv.conf
