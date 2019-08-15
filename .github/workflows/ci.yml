@@ -1,0 +1,50 @@
+name: GitHub CI
+
+on:
+
+  pull_request:
+
+  push:
+    branches:
+      - master
+
+  schedule:
+    - cron: 0 0 * * 0
+
+jobs:
+
+  build-test:
+
+    strategy:
+      matrix:
+        libc:
+          - glibc
+          - musl
+          - uclibc
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+
+      - name: Prepare Environment
+        run: docker system prune --all --force --volumes
+      - name: Happy Eyeballs
+        run: wget -qO- 'https://github.com/tianon/pgp-happy-eyeballs/raw/master/hack-my-builds.sh' | bash
+
+      - name: Build Tarball
+        run: ./build.sh ${{ matrix.libc }}
+
+      - name: Build Image
+        run: docker build -t busybox:${{ matrix.libc }} ${{ matrix.libc }}
+
+      - name: Run Tests
+        run: |
+          git clone --depth 1 https://github.com/docker-library/official-images.git ~/oi
+          ~/oi/test/run.sh busybox:${{ matrix.libc }}
+
+      - name: '"docker images"'
+        run: docker images
