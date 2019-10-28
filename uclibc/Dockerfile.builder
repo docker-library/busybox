@@ -33,7 +33,7 @@ RUN gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys AB07D806D2CE7
 
 # https://buildroot.org/download.html
 # https://buildroot.org/downloads/?C=M;O=D
-ENV BUILDROOT_VERSION 2019.08
+ENV BUILDROOT_VERSION 2019.08.1
 
 RUN set -eux; \
 	tarball="buildroot-${BUILDROOT_VERSION}.tar.bz2"; \
@@ -174,7 +174,7 @@ ENV PATH /usr/src/buildroot/output/host/usr/bin:$PATH
 # sub   1024g/2C766641 2006-12-12
 RUN gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
 
-ENV BUSYBOX_VERSION 1.31.0
+ENV BUSYBOX_VERSION 1.31.1
 
 RUN set -eux; \
 	tarball="busybox-${BUSYBOX_VERSION}.tar.bz2"; \

@@ -17,7 +17,7 @@ RUN set -eux; \
 # sub   1024g/2C766641 2006-12-12
 RUN gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
 
-ENV BUSYBOX_VERSION 1.31.0
+ENV BUSYBOX_VERSION 1.31.1
 
 RUN set -eux; \
 	tarball="busybox-${BUSYBOX_VERSION}.tar.bz2"; \
@@ -121,7 +121,7 @@ RUN set -eux; \
 
 # download a few extra files from buildroot (/etc/passwd, etc)
 RUN set -eux; \
-	buildrootVersion='2019.08'; \
+	buildrootVersion='2019.08.1'; \
 	mkdir -p rootfs/etc; \
 	for f in passwd shadow group; do \
 		curl -fL -o "rootfs/etc/$f" "https://git.busybox.net/buildroot/plain/system/skeleton/etc/$f?id=$buildrootVersion"; \
