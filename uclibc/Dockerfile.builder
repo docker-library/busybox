@@ -33,7 +33,7 @@ RUN gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys AB07D806D2CE7
 
 # https://buildroot.org/download.html
 # https://buildroot.org/downloads/?C=M;O=D
-ENV BUILDROOT_VERSION 2019.08.2
+ENV BUILDROOT_VERSION 2019.11
 
 RUN set -eux; \
 	tarball="buildroot-${BUILDROOT_VERSION}.tar.bz2"; \
