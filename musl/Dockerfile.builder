@@ -35,7 +35,7 @@ WORKDIR /usr/src/busybox
 RUN sed -i 's/^struct kconf_id \*$/static &/g' scripts/kconfig/zconf.hash.c_shipped
 
 # CONFIG_LAST_SUPPORTED_WCHAR: see https://github.com/docker-library/busybox/issues/13 (UTF-8 input)
-# see http://wiki.musl-libc.org/wiki/Building_Busybox
+# see https://wiki.musl-libc.org/wiki/Building_Busybox
 RUN set -eux; \
 	\
 	setConfs=' \

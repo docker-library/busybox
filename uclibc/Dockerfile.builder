@@ -155,7 +155,7 @@ RUN set -eux; \
 		grep -q "^$confV\$" .config; \
 	done;
 
-# http://www.finnie.org/2014/02/13/compiling-busybox-with-uclibc/
+# https://www.finnie.org/2014/02/13/compiling-busybox-with-uclibc/
 RUN set -eux; \
 # force a particular GNU arch for "host-gmp" (otherwise it fails on some arches)
 	gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \
