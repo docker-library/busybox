@@ -9,7 +9,14 @@ RUN set -eux; \
 		gnupg dirmngr \
 		make \
 	; \
-	rm -rf /var/lib/apt/lists/*
+	apt-get clean; \
+	rm -rf \
+		/var/lib/apt/lists/* \
+		/tmp/* \
+        	/var/tmp/* \
+        	/usr/share/man \
+        	/usr/share/doc \
+        	/usr/share/doc-base
 
 # pub   1024D/ACC9965B 2006-12-12
 #       Key fingerprint = C9E9 416F 76E6 10DB D09D  040F 47B7 0C55 ACC9 965B
