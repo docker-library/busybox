@@ -2,7 +2,7 @@ FROM debian:buster-slim
 
 RUN set -eux; \
 	apt-get update; \
-	apt-get install -y \
+	apt-get -no-install-recommends install -y \
 		bzip2 \
 		curl \
 		gcc \
