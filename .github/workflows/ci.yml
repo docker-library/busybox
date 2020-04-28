@@ -1,50 +1,51 @@
 name: GitHub CI
 
 on:
-
   pull_request:
-
   push:
     branches:
       - master
-
   schedule:
     - cron: 0 0 * * 0
 
+defaults:
+  run:
+    shell: 'bash -Eeuo pipefail -x {0}'
+
 jobs:
 
-  build-test:
-
-    strategy:
-      matrix:
-        libc:
-          - glibc
-          - musl
-          - uclibc
-
+  generate-jobs:
+    name: Generate Jobs
     runs-on: ubuntu-latest
-
+    outputs:
+      strategy: ${{ steps.generate-jobs.outputs.strategy }}
     steps:
-
       - uses: actions/checkout@v1
-        with:
-          fetch-depth: 1
-
-      - name: Prepare Environment
-        run: docker system prune --all --force --volumes
-      - name: Happy Eyeballs
-        run: wget -qO- 'https://github.com/tianon/pgp-happy-eyeballs/raw/master/hack-my-builds.sh' | bash
-
-      - name: Build Tarball
-        run: ./build.sh ${{ matrix.libc }}
-
-      - name: Build Image
-        run: docker build -t busybox:${{ matrix.libc }} ${{ matrix.libc }}
-
-      - name: Run Tests
+      - id: generate-jobs
+        name: Generate Jobs
         run: |
-          git clone --depth 1 https://github.com/docker-library/official-images.git ~/oi
-          ~/oi/test/run.sh busybox:${{ matrix.libc }}
+          git clone --depth 1 https://github.com/docker-library/bashbrew.git -b master ~/bashbrew
+          strategy="$(GENERATE_STACKBREW_LIBRARY='.github/workflows/fake-gsl.sh' ~/bashbrew/scripts/github-actions/generate.sh)"
+          strategy="$(jq -c '.matrix.include = [ .matrix.include[] | .runs.build = "./build.sh " + (.meta.entries[].directory | @sh) + "\n" + .runs.build ]' <<<"$strategy")"
+          jq . <<<"$strategy" # sanity check / debugging aid
+          echo "::set-output name=strategy::$strategy"
 
+  test:
+    needs: generate-jobs
+    strategy: ${{ fromJson(needs.generate-jobs.outputs.strategy) }}
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v1
+      - name: Prepare Environment
+        run: ${{ matrix.runs.prepare }}
+      - name: Pull Dependencies
+        run: ${{ matrix.runs.pull }}
+      - name: Build ${{ matrix.name }}
+        run: ${{ matrix.runs.build }}
+      - name: History ${{ matrix.name }}
+        run: ${{ matrix.runs.history }}
+      - name: Test ${{ matrix.name }}
+        run: ${{ matrix.runs.test }}
       - name: '"docker images"'
-        run: docker images
+        run: ${{ matrix.runs.images }}
