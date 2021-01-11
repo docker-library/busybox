@@ -1,0 +1,3 @@
+/*/**/Dockerfile          linguist-generated
+/*/**/Dockerfile.builder  linguist-generated            linguist-language=Dockerfile
+/Dockerfile*.template     linguist-language=Dockerfile
