@@ -1,3 +1,9 @@
+#
+# NOTE: THIS DOCKERFILE IS GENERATED VIA "apply-templates.sh"
+#
+# PLEASE DO NOT EDIT IT DIRECTLY.
+#
+
 FROM debian:buster-slim
 
 RUN set -eux; \
@@ -8,8 +14,14 @@ RUN set -eux; \
 		gcc \
 		gnupg dirmngr \
 		make \
-		\
-# buildroot
+	; \
+	rm -rf /var/lib/apt/lists/*
+
+# grab/use buildroot for its uClibc toolchain
+
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y \
 		bc \
 		cpio \
 		dpkg-dev \
@@ -22,8 +34,6 @@ RUN set -eux; \
 		wget \
 	; \
 	rm -rf /var/lib/apt/lists/*
-
-# we grab buildroot for it's uClibc toolchain
 
 # pub   1024D/59C36319 2009-01-15
 #       Key fingerprint = AB07 D806 D2CE 741F B886  EE50 B025 BA8B 59C3 6319
@@ -186,11 +196,13 @@ ENV PATH /usr/src/buildroot/output/host/usr/bin:$PATH
 RUN gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
 
 ENV BUSYBOX_VERSION 1.33.0
+ENV BUSYBOX_SHA256 d568681c91a85edc6710770cebc1e80e042ad74d305b5c2e6d57a5f3de3b8fbd
 
 RUN set -eux; \
 	tarball="busybox-${BUSYBOX_VERSION}.tar.bz2"; \
-	curl -fL -o busybox.tar.bz2 "https://busybox.net/downloads/$tarball"; \
 	curl -fL -o busybox.tar.bz2.sig "https://busybox.net/downloads/$tarball.sig"; \
+	curl -fL -o busybox.tar.bz2 "https://busybox.net/downloads/$tarball"; \
+	echo "$BUSYBOX_SHA256 *busybox.tar.bz2" | sha256sum -c -; \
 	gpg --batch --verify busybox.tar.bz2.sig busybox.tar.bz2; \
 	mkdir -p /usr/src/busybox; \
 	tar -xf busybox.tar.bz2 -C /usr/src/busybox --strip-components 1; \
@@ -198,13 +210,13 @@ RUN set -eux; \
 
 WORKDIR /usr/src/busybox
 
-# CONFIG_LAST_SUPPORTED_WCHAR: see https://github.com/docker-library/busybox/issues/13 (UTF-8 input)
 RUN set -eux; \
 	\
 	setConfs=' \
 		CONFIG_AR=y \
 		CONFIG_FEATURE_AR_CREATE=y \
 		CONFIG_FEATURE_AR_LONG_FILENAMES=y \
+# CONFIG_LAST_SUPPORTED_WCHAR: see https://github.com/docker-library/busybox/issues/13 (UTF-8 input)
 		CONFIG_LAST_SUPPORTED_WCHAR=0 \
 		CONFIG_STATIC=y \
 	'; \
@@ -240,19 +252,19 @@ RUN set -eux; \
 	done; \
 	for confV in $setConfs; do \
 		grep -q "^$confV\$" .config; \
-	done;
+	done
 
 RUN set -eux; \
-	make -j "$(nproc)" \
-		CROSS_COMPILE="$(basename /usr/src/buildroot/output/host/usr/*-buildroot-linux-uclibc*)-" \
-		busybox \
-	; \
+	nproc="$(nproc)"; \
+	CROSS_COMPILE="$(basename /usr/src/buildroot/output/host/usr/*-buildroot-linux-uclibc*)"; \
+	export CROSS_COMPILE="$CROSS_COMPILE-"; \
+	make -j "$nproc" busybox; \
 	./busybox --help; \
 	mkdir -p rootfs/bin; \
 	ln -vL busybox rootfs/bin/; \
 	\
+# copy "getconf" from buildroot
 	ln -vL ../buildroot/output/target/usr/bin/getconf rootfs/bin/; \
-	\
 	chroot rootfs /bin/getconf _NPROCESSORS_ONLN; \
 	\
 	chroot rootfs /bin/busybox --install /bin
@@ -260,11 +272,12 @@ RUN set -eux; \
 # install a few extra files from buildroot (/etc/passwd, etc)
 RUN set -eux; \
 	mkdir -p rootfs/etc; \
-	for f in passwd shadow group; do \
-		ln -vL \
-			"../buildroot/system/skeleton/etc/$f" \
-			"rootfs/etc/$f"; \
-	done; \
+	ln -vL \
+		../buildroot/system/skeleton/etc/group \
+		../buildroot/system/skeleton/etc/passwd \
+		../buildroot/system/skeleton/etc/shadow \
+		rootfs/etc/ \
+	; \
 # CVE-2019-5021, https://github.com/docker-library/official-images/pull/5880#issuecomment-490681907
 	grep -E '^root::' rootfs/etc/shadow; \
 	sed -ri -e 's/^root::/root:*:/' rootfs/etc/shadow; \
@@ -282,7 +295,7 @@ RUN set -eux; \
 			} \
 			printf "chmod %s %s\n", $3, $1; \
 		} \
-	' ../buildroot/system/device_table.txt | bash -Eeuo pipefail -x
+	' ../buildroot/system/device_table.txt | sh -eux
 
 # create missing home directories
 RUN set -eux; \

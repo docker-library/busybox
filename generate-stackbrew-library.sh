@@ -1,19 +1,16 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -Eeuo pipefail
-
-self="$(basename "$BASH_SOURCE")"
-cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
 gitHubUrl='https://github.com/docker-library/busybox'
 rawGitUrl="$gitHubUrl/raw"
 
-# prefer uclibc, but if it's unavailable use glibc if possible since it's got less "edge case" behavior, especially around DNS
-variants=(
-	uclibc
-	glibc
-	musl
-)
-# (order here determines "preference" for representing "latest")
+self="$(basename "$BASH_SOURCE")"
+cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
+
+if [ "$#" -eq 0 ]; then
+	versions="$(jq -r 'keys | map(@sh) | join(" ")' versions.json)"
+	eval "set -- $versions"
+fi
 
 archMaps=( $(
 	git ls-remote --heads "${gitHubUrl}.git" \
@@ -55,57 +52,89 @@ join() {
 	echo "${out#$sep}"
 }
 
-# pre-flight sanity checks
-fullVersion=
-for variant in "${variants[@]}"; do
-	[ -f "$variant/Dockerfile.builder" ]
-	oldVersion="$fullVersion"
-	fullVersion="$(awk '$1 == "ENV" && $2 == "BUSYBOX_VERSION" { print $3; exit }' "$variant/Dockerfile.builder")"
-	[ -n "$fullVersion" ]
-	[ "$fullVersion" = "${oldVersion:-$fullVersion}" ]
-done
-versionAliases=()
-while [ "${fullVersion%.*}" != "$fullVersion" ]; do
-	versionAliases+=( $fullVersion )
-	fullVersion="${fullVersion%.*}"
-done
-versionAliases+=(
-	$fullVersion
-	latest
-)
+# if stable is 1.32.1 and unstable is 1.33.0, we want busybox:1.33 to point to unstable but busybox:1 (and busybox:latest) to point to stable
+# since stable always comes first, we'll just let it take all the tags it calculates, and use this to remove any overlap when we process unstable :)
+declare -A usedTags=()
+_tags() {
+	local tag first=
+	for tag; do
+		[ -z "${usedTags[$tag]:-}" ] || continue
+		usedTags[$tag]=1
+		if [ -z "$first" ]; then
+			echo
+			echo -n 'Tags: '
+			first=1
+		else
+			echo -n ', '
+		fi
+		echo -n "$tag"
+	done
+	if [ -z "$first" ]; then
+		return 1
+	fi
+	echo
+	return 0
+}
 
-declare -A archLatest=()
-for variant in "${variants[@]}"; do
-	variantAliases=( "${versionAliases[@]/%/-$variant}" )
-	variantAliases=( "${variantAliases[@]//latest-/}" )
+allVersions=()
+for version; do
+	export version
 
-	variantArches=()
-	for arch in "${arches[@]}"; do
-		archCommit="${archCommits[$arch]}"
-		if wget --quiet --spider -O /dev/null -o /dev/null "$rawGitUrl/$archCommit/$variant/busybox.tar.xz"; then
-			variantArches+=( "$arch" )
-			if [ -z "${archLatest[$arch]:-}" ]; then
-				archLatest[$arch]="$variant"
+	variants="$(jq -r '.[env.version].variants | map(@sh) | join(" ")' versions.json)"
+	eval "variants=( $variants )"
+
+	fullVersion="$(jq -r '.[env.version].version' versions.json)"
+	allVersions+=( "$fullVersion" )
+	latestVersion="$(xargs -n1 <<<"${allVersions[*]}" | sort -V | tail -1)"
+	if [ "$latestVersion" != "$fullVersion" ]; then
+		# if "unstable" is older than "stable" (1.32.0 unstable vs 1.32.1 stable, for example), skip unstable
+		continue
+	fi
+
+	versionAliases=()
+	while [ "${fullVersion%.*}" != "$fullVersion" ]; do
+		versionAliases+=( $fullVersion )
+		fullVersion="${fullVersion%.*}"
+	done
+	versionAliases+=(
+		$fullVersion
+		$version # "stable", "unstable"
+		latest
+	)
+
+	declare -A archLatestDir=()
+	for variant in "${variants[@]}"; do
+		dir="$version/$variant"
+
+		variantAliases=( "${versionAliases[@]/%/-$variant}" )
+		variantAliases=( "${variantAliases[@]//latest-/}" )
+
+		variantArches=()
+		for arch in "${arches[@]}"; do
+			archCommit="${archCommits[$arch]}"
+			if wget --quiet --spider -O /dev/null -o /dev/null "$rawGitUrl/$archCommit/$dir/busybox.tar.xz"; then
+				variantArches+=( "$arch" )
+				: "${archLatestDir[$arch]:=$dir}" # record the first supported directory per architecture for "latest" and friends
 			fi
+		done
+
+		if _tags "${variantAliases[@]}"; then
+			cat <<-EOE
+				Architectures: $(join ', ' "${variantArches[@]}")
+				Directory: $dir
+			EOE
 		fi
 	done
 
-	echo
-	cat <<-EOE
-		Tags: $(join ', ' "${variantAliases[@]}")
-		Architectures: $(join ', ' "${variantArches[@]}")
-		Directory: $variant
-	EOE
-done
-
-echo
-cat <<-EOE
-	Tags: $(join ', ' "${versionAliases[@]}")
-	Architectures: $(join ', ' "${arches[@]}")
-EOE
-for arch in "${arches[@]}"; do
-	archVariant="${archLatest[$arch]}"
-	cat <<-EOA
-		${arch}-Directory: $archVariant
-	EOA
+	if _tags "${versionAliases[@]}"; then
+		cat <<-EOE
+			Architectures: $(join ', ' "${arches[@]}")
+		EOE
+		for arch in "${arches[@]}"; do
+			archDir="${archLatestDir[$arch]}"
+			cat <<-EOA
+				${arch}-Directory: $archDir
+			EOA
+		done
+	fi
 done
