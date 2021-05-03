@@ -3,13 +3,13 @@
     "buildroot": {
       "version": "2021.02.1"
     },
-    "sha256": "9d57c4bd33974140fd4111260468af22856f12f5b5ef7c70c8d9b75c712a0dee",
+    "sha256": "12cec6bd2b16d8a9446dd16130f2b92982f1819f6e1c5f5887b6db03f5660d28",
     "variants": [
       "uclibc",
       "glibc",
       "musl"
     ],
-    "version": "1.32.1"
+    "version": "1.33.1"
   },
   "unstable": {
     "buildroot": {
