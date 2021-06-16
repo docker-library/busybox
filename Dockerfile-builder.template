@@ -1,5 +1,5 @@
 {{ if env.variant == "musl" then ( -}}
-FROM alpine:3.13
+FROM alpine:3.14
 
 RUN set -eux; \
 	apk add --no-cache \
