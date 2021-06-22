@@ -23,7 +23,7 @@ RUN set -eux; \
 #       Key fingerprint = C9E9 416F 76E6 10DB D09D  040F 47B7 0C55 ACC9 965B
 # uid                  Denis Vlasenko <vda.linux@googlemail.com>
 # sub   1024g/2C766641 2006-12-12
-RUN gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
+RUN gpg --batch --keyserver keyserver.ubuntu.com --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
 
 ENV BUSYBOX_VERSION 1.33.1
 ENV BUSYBOX_SHA256 12cec6bd2b16d8a9446dd16130f2b92982f1819f6e1c5f5887b6db03f5660d28
