@@ -143,10 +143,17 @@ RUN set -eux; \
 			"; \
 			unsetConfs="$unsetConfs \
 				BR2_MIPS_SOFT_FLOAT \
-			" \
+			"; \
 			;; \
 			\
 # TODO ppc64el ? (needs BR2_TOOLCHAIN_BUILDROOT_UCLIBC support)
+			\
+		riscv64) \
+			setConfs="$setConfs \
+				BR2_riscv=y \
+				BR2_RISCV_64=y \
+			"; \
+			;; \
 			\
 # TODO s390x ? (needs BR2_TOOLCHAIN_BUILDROOT_UCLIBC support)
 			\
