@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM debian:buster-slim
+FROM riscv64/debian:unstable-slim
 
 RUN set -eux; \
 	apt-get update; \
