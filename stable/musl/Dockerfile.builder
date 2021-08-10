@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM alpine:3.14
+FROM amd64/alpine:3.14
 
 RUN set -eux; \
 	apk add --no-cache \
