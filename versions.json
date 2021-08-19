@@ -15,12 +15,12 @@
     "buildroot": {
       "version": "2021.05.1"
     },
-    "sha256": "d568681c91a85edc6710770cebc1e80e042ad74d305b5c2e6d57a5f3de3b8fbd",
+    "sha256": "ec8d1615edb045b83b81966604759c4d4ac921434ab4011da604f629c06074ce",
     "variants": [
       "uclibc",
       "glibc",
       "musl"
     ],
-    "version": "1.33.0"
+    "version": "1.34.0"
   }
 }
