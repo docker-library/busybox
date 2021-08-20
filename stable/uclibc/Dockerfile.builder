@@ -14,6 +14,7 @@ RUN set -eux; \
 		gcc \
 		gnupg dirmngr \
 		make \
+		patch \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
@@ -26,7 +27,6 @@ RUN set -eux; \
 		cpio \
 		dpkg-dev \
 		g++ \
-		patch \
 		perl \
 		python \
 		rsync \

@@ -16,6 +16,7 @@ RUN set -eux; \
 		linux-headers \
 		make \
 		musl-dev \
+		patch \
 		tzdata \
 	;
 
