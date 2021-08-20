@@ -14,6 +14,7 @@ RUN set -eux; \
 		gcc \
 		gnupg dirmngr \
 		make \
+		patch \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
@@ -26,7 +27,6 @@ RUN set -eux; \
 		cpio \
 		dpkg-dev \
 		g++ \
-		patch \
 		perl \
 		python \
 		rsync \
@@ -216,6 +216,14 @@ RUN set -eux; \
 	rm busybox.tar.bz2*
 
 WORKDIR /usr/src/busybox
+
+# https://bugs.busybox.net/show_bug.cgi?id=14156
+# https://git.busybox.net/busybox/commit/?id=29b53ef03fc7ddd3ba27898d77a900a2f184aa0d
+RUN set -eux; \
+	curl -fL -o mips.patch 'https://git.busybox.net/busybox/patch/?id=29b53ef03fc7ddd3ba27898d77a900a2f184aa0d'; \
+	echo '1fb4b9669cd6e86e04408a86483eb6e2dc4e72ea026b07926eaf50bb2349801e *mips.patch' | sha256sum -c -; \
+	patch --strip=1 --input=mips.patch; \
+	rm mips.patch
 
 RUN set -eux; \
 	\

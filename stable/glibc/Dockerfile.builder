@@ -14,6 +14,7 @@ RUN set -eux; \
 		gcc \
 		gnupg dirmngr \
 		make \
+		patch \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
