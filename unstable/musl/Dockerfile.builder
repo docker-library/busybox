@@ -109,7 +109,7 @@ RUN set -eux; \
 # copy simplified getconf port from Alpine
 	aportsVersion="v$(cat /etc/alpine-release)"; \
 	curl -fsSL \
-		"https://git.alpinelinux.org/cgit/aports/plain/main/musl/getconf.c?h=${aportsVersion}" \
+		"https://github.com/alpinelinux/aports/raw/$aportsVersion/main/musl/getconf.c" \
 		-o /usr/src/getconf.c \
 	; \
 	gcc -o rootfs/bin/getconf -static -Os /usr/src/getconf.c; \
