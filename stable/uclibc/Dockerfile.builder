@@ -43,7 +43,7 @@ RUN gpg --batch --keyserver keyserver.ubuntu.com --recv-keys AB07D806D2CE741FB88
 
 # https://buildroot.org/download.html
 # https://buildroot.org/downloads/?C=M;O=D
-ENV BUILDROOT_VERSION 2021.05.1
+ENV BUILDROOT_VERSION 2021.08
 
 RUN set -eux; \
 	tarball="buildroot-${BUILDROOT_VERSION}.tar.bz2"; \
