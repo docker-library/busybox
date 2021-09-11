@@ -15,7 +15,7 @@ RUN set -eux; \
 		tzdata \
 	;
 {{ ) else ( -}}
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 
 RUN set -eux; \
 	apt-get update; \
