@@ -31,8 +31,7 @@ cat <<-EOH
 # this file is generated via $gitHubUrl/blob/$selfCommit/$self
 
 Maintainers: Tianon Gravi <admwiggin@gmail.com> (@tianon),
-             Joseph Ferguson <yosifkit@gmail.com> (@yosifkit),
-             Jérôme Petazzoni <jerome.petazzoni@gmail.com> (@jpetazzo)
+             Joseph Ferguson <yosifkit@gmail.com> (@yosifkit)
 GitRepo: $gitHubUrl.git
 GitCommit: $selfCommit
 EOH
