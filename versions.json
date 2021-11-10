@@ -1,7 +1,7 @@
 {
   "stable": {
     "buildroot": {
-      "version": "2021.08.1"
+      "version": "2021.08.2"
     },
     "sha256": "415fbd89e5344c96acf449d94a6f956dbed62e18e835fc83e064db33a34bd549",
     "variants": [
@@ -13,7 +13,7 @@
   },
   "unstable": {
     "buildroot": {
-      "version": "2021.08.1"
+      "version": "2021.08.2"
     },
     "sha256": "ec8d1615edb045b83b81966604759c4d4ac921434ab4011da604f629c06074ce",
     "variants": [
