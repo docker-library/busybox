@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM alpine:3.14
+FROM alpine:3.15
 
 RUN set -eux; \
 	apk add --no-cache \
@@ -119,7 +119,7 @@ RUN set -eux; \
 
 # install a few extra files from buildroot (/etc/passwd, etc)
 RUN set -eux; \
-	buildrootVersion='2021.08'; \
+	buildrootVersion='2021.08.2'; \
 	for file in \
 		system/device_table.txt \
 		system/skeleton/etc/group \

@@ -24,8 +24,8 @@ RUN set -eux; \
 # sub   1024g/2C766641 2006-12-12
 RUN gpg --batch --keyserver keyserver.ubuntu.com --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
 
-ENV BUSYBOX_VERSION 1.33.1
-ENV BUSYBOX_SHA256 12cec6bd2b16d8a9446dd16130f2b92982f1819f6e1c5f5887b6db03f5660d28
+ENV BUSYBOX_VERSION 1.34.1
+ENV BUSYBOX_SHA256 415fbd89e5344c96acf449d94a6f956dbed62e18e835fc83e064db33a34bd549
 
 RUN set -eux; \
 	tarball="busybox-${BUSYBOX_VERSION}.tar.bz2"; \
@@ -131,7 +131,7 @@ RUN set -eux; \
 
 # install a few extra files from buildroot (/etc/passwd, etc)
 RUN set -eux; \
-	buildrootVersion='2021.08'; \
+	buildrootVersion='2021.08.2'; \
 	for file in \
 		system/device_table.txt \
 		system/skeleton/etc/group \
