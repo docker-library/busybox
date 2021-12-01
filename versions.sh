@@ -15,7 +15,8 @@ versions=( "${versions[@]%/}" )
 busyboxVersions="$(
 	wget -qO- 'https://busybox.net' \
 		| grep -ioE ' -- BusyBox [0-9.]+ [(](un)?stable[)]' \
-		| cut -d' ' -f4-
+		| cut -d' ' -f4- \
+		| sort -rV
 )"
 # "1.32.1 (stable)"
 # "1.33.0 (unstable)"
