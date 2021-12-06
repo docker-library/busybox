@@ -39,9 +39,10 @@ RUN set -eux; \
 		bc \
 		cpio \
 		dpkg-dev \
+		file \
 		g++ \
 		perl \
-		python \
+		python3 \
 		rsync \
 		unzip \
 		wget \

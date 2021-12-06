@@ -26,7 +26,8 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/docker-library/bashbrew.git -b master ~/bashbrew
           strategy="$(GENERATE_STACKBREW_LIBRARY='.github/workflows/fake-gsl.sh' ~/bashbrew/scripts/github-actions/generate.sh)"
-          strategy="$(jq -c '.matrix.include = [ .matrix.include[] | .runs.build = "./build.sh " + (.meta.entries[].directory | @sh) + "\n" + .runs.build ]' <<<"$strategy")"
+          strategy="$(.github/workflows/munge-build.sh -c <<<"$strategy")"
+          strategy="$(.github/workflows/munge-debian-unstable.sh -c <<<"$strategy")"
           jq . <<<"$strategy" # sanity check / debugging aid
           echo "::set-output name=strategy::$strategy"
 
