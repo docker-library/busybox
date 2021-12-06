@@ -12,11 +12,12 @@ fi
 
 echo 'Maintainers: foo (@bar)'
 echo 'GitRepo: https://github.com/docker-library/busybox.git'
+commit="$(git log -1 --format='format:%H')"
+echo "GitCommit: $commit"
 
 for d; do
-	commit="$(git log -1 --format='format:%H' "$d/Dockerfile")"
 	echo
 	echo "Tags: ${d////-}"
 	echo "Directory: $d"
-	echo "GitCommit: $commit"
+	echo "File: Dockerfile.builder"
 done
