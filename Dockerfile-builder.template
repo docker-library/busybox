@@ -59,16 +59,16 @@ RUN gpg --batch --keyserver keyserver.ubuntu.com --recv-keys AB07D806D2CE741FB88
 ENV BUILDROOT_VERSION {{ .buildroot.version }}
 
 RUN set -eux; \
-	tarball="buildroot-${BUILDROOT_VERSION}.tar.bz2"; \
-	curl -fL -o buildroot.tar.bz2 "https://buildroot.org/downloads/$tarball"; \
-	curl -fL -o buildroot.tar.bz2.sign "https://buildroot.org/downloads/$tarball.sign"; \
-	gpg --batch --decrypt --output buildroot.tar.bz2.txt buildroot.tar.bz2.sign; \
-	awk '$1 == "SHA1:" && $2 ~ /^[0-9a-f]+$/ && $3 == "'"$tarball"'" { print $2, "*buildroot.tar.bz2" }' buildroot.tar.bz2.txt > buildroot.tar.bz2.sha1; \
-	test -s buildroot.tar.bz2.sha1; \
-	sha1sum -c buildroot.tar.bz2.sha1; \
+	tarball="buildroot-${BUILDROOT_VERSION}.tar.xz"; \
+	curl -fL -o buildroot.tar.xz "https://buildroot.org/downloads/$tarball"; \
+	curl -fL -o buildroot.tar.xz.sign "https://buildroot.org/downloads/$tarball.sign"; \
+	gpg --batch --decrypt --output buildroot.tar.xz.txt buildroot.tar.xz.sign; \
+	awk '$1 == "SHA1:" && $2 ~ /^[0-9a-f]+$/ && $3 == "'"$tarball"'" { print $2, "*buildroot.tar.xz" }' buildroot.tar.xz.txt > buildroot.tar.xz.sha1; \
+	test -s buildroot.tar.xz.sha1; \
+	sha1sum -c buildroot.tar.xz.sha1; \
 	mkdir -p /usr/src/buildroot; \
-	tar -xf buildroot.tar.bz2 -C /usr/src/buildroot --strip-components 1; \
-	rm buildroot.tar.bz2*
+	tar -xf buildroot.tar.xz -C /usr/src/buildroot --strip-components 1; \
+	rm buildroot.tar.xz*
 
 RUN set -eux; \
 	\
