@@ -26,8 +26,8 @@ RUN set -eux; \
 # sub   1024g/2C766641 2006-12-12
 RUN gpg --batch --keyserver keyserver.ubuntu.com --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
 
-ENV BUSYBOX_VERSION 1.34.0
-ENV BUSYBOX_SHA256 ec8d1615edb045b83b81966604759c4d4ac921434ab4011da604f629c06074ce
+ENV BUSYBOX_VERSION 1.35.0
+ENV BUSYBOX_SHA256 faeeb244c35a348a334f4a59e44626ee870fb07b6884d68c10ae8bc19f83a694
 
 RUN set -eux; \
 	tarball="busybox-${BUSYBOX_VERSION}.tar.bz2"; \
@@ -40,14 +40,6 @@ RUN set -eux; \
 	rm busybox.tar.bz2*
 
 WORKDIR /usr/src/busybox
-
-# https://bugs.busybox.net/show_bug.cgi?id=14156
-# https://git.busybox.net/busybox/commit/?id=29b53ef03fc7ddd3ba27898d77a900a2f184aa0d
-RUN set -eux; \
-	curl -fL -o mips.patch 'https://git.busybox.net/busybox/patch/?id=29b53ef03fc7ddd3ba27898d77a900a2f184aa0d'; \
-	echo '1fb4b9669cd6e86e04408a86483eb6e2dc4e72ea026b07926eaf50bb2349801e *mips.patch' | sha256sum -c -; \
-	patch --strip=1 --input=mips.patch; \
-	rm mips.patch
 
 RUN set -eux; \
 	\
