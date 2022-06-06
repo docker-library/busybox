@@ -86,7 +86,7 @@ RUN set -eux; \
 	'; \
 	\
 # buildroot arches: https://git.busybox.net/buildroot/tree/arch
-# buildroot+uclibc arches: https://git.busybox.net/buildroot/tree/toolchain/toolchain-buildroot/Config.in ("config BR2_TOOLCHAIN_BUILDROOT_UCLIBC")
+# buildroot+uclibc arches: https://git.busybox.net/buildroot/tree/package/uclibc/Config.in ("config BR2_PACKAGE_UCLIBC_ARCH_SUPPORTS")
 	dpkgArch="$(dpkg --print-architecture)"; \
 	case "$dpkgArch" in \
 		amd64) \
