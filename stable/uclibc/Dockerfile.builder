@@ -44,7 +44,7 @@ RUN gpg --batch --keyserver keyserver.ubuntu.com --recv-keys AB07D806D2CE741FB88
 
 # https://buildroot.org/download.html
 # https://buildroot.org/downloads/?C=M;O=D
-ENV BUILDROOT_VERSION 2022.02.2
+ENV BUILDROOT_VERSION 2022.05
 
 RUN set -eux; \
 	tarball="buildroot-${BUILDROOT_VERSION}.tar.xz"; \
@@ -73,7 +73,7 @@ RUN set -eux; \
 	'; \
 	\
 # buildroot arches: https://git.busybox.net/buildroot/tree/arch
-# buildroot+uclibc arches: https://git.busybox.net/buildroot/tree/toolchain/toolchain-buildroot/Config.in ("config BR2_TOOLCHAIN_BUILDROOT_UCLIBC")
+# buildroot+uclibc arches: https://git.busybox.net/buildroot/tree/package/uclibc/Config.in ("config BR2_PACKAGE_UCLIBC_ARCH_SUPPORTS")
 	dpkgArch="$(dpkg --print-architecture)"; \
 	case "$dpkgArch" in \
 		amd64) \
