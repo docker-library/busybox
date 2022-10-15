@@ -20,7 +20,7 @@ jobs:
     outputs:
       strategy: ${{ steps.generate-jobs.outputs.strategy }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - id: generate-jobs
         name: Generate Jobs
         run: |
@@ -28,8 +28,8 @@ jobs:
           strategy="$(GENERATE_STACKBREW_LIBRARY='.github/workflows/fake-gsl.sh' ~/bashbrew/scripts/github-actions/generate.sh)"
           strategy="$(.github/workflows/munge-build.sh -c <<<"$strategy")"
           strategy="$(.github/workflows/munge-debian-unstable.sh -c <<<"$strategy")"
+          echo "strategy=$strategy" >> "$GITHUB_OUTPUT"
           jq . <<<"$strategy" # sanity check / debugging aid
-          echo "::set-output name=strategy::$strategy"
 
   test:
     needs: generate-jobs
@@ -37,7 +37,7 @@ jobs:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - name: Prepare Environment
         run: ${{ matrix.runs.prepare }}
       - name: Pull Dependencies
