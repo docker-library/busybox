@@ -99,6 +99,10 @@ RUN set -eux; \
 			setConfs="$setConfs \
 				BR2_aarch64=y \
 			"; \
+# https://github.com/docker-library/busybox/issues/149
+			setConfs="$setConfs BR2_ARM64_PAGE_SIZE_64K=y"; \
+			unsetConfs="$unsetConfs BR2_ARM64_PAGE_SIZE_4K"; \
+# (it's reasonable to use a larger page size than the host, but not the reverse, and some distros default to 64k instead of 4k)
 			;; \
 			\
 # https://wiki.debian.org/ArmEabiPort#Choice_of_minimum_CPU
