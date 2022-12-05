@@ -56,9 +56,9 @@ for version in "${versions[@]}"; do
 				buildroot: {
 					version: env.buildrootVersion,
 				},
-				# prefer uclibc, but if unavailable use glibc since it has less "edge case" behavior
+				# as of buildroot 2022.11, glibc is the default, so we follow suit (https://github.com/buildroot/buildroot/commit/4057e36ca9665edd5248512e4edba2c243b8f4be)
 				# https://busybox.net/FAQ.html#libc
-				variants: [ "uclibc", "glibc", "musl" ],
+				variants: [ "glibc", "uclibc", "musl" ],
 				# (order here determines "preference" for representing "latest")
 			}
 		'
