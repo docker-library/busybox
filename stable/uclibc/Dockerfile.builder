@@ -44,7 +44,7 @@ RUN gpg --batch --keyserver keyserver.ubuntu.com --recv-keys AB07D806D2CE741FB88
 
 # https://buildroot.org/download.html
 # https://buildroot.org/downloads/?C=M;O=D
-ENV BUILDROOT_VERSION 2022.08.2
+ENV BUILDROOT_VERSION 2022.11
 
 RUN set -eux; \
 	tarball="buildroot-${BUILDROOT_VERSION}.tar.xz"; \
@@ -70,15 +70,18 @@ RUN set -eux; \
 	\
 	unsetConfs=' \
 		BR2_SHARED_LIBS \
+		BR2_TOOLCHAIN_BUILDROOT_GLIBC \
 	'; \
 	\
 # buildroot arches: https://git.busybox.net/buildroot/tree/arch
 # buildroot+uclibc arches: https://git.busybox.net/buildroot/tree/package/uclibc/Config.in ("config BR2_PACKAGE_UCLIBC_ARCH_SUPPORTS")
 	dpkgArch="$(dpkg --print-architecture)"; \
 	case "$dpkgArch" in \
+# explicitly target amd64 v1
 		amd64) \
 			setConfs="$setConfs \
 				BR2_x86_64=y \
+				BR2_x86_x86_64=y \
 			"; \
 			;; \
 			\

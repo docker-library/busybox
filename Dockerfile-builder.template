@@ -83,15 +83,18 @@ RUN set -eux; \
 	\
 	unsetConfs=' \
 		BR2_SHARED_LIBS \
+		BR2_TOOLCHAIN_BUILDROOT_GLIBC \
 	'; \
 	\
 # buildroot arches: https://git.busybox.net/buildroot/tree/arch
 # buildroot+uclibc arches: https://git.busybox.net/buildroot/tree/package/uclibc/Config.in ("config BR2_PACKAGE_UCLIBC_ARCH_SUPPORTS")
 	dpkgArch="$(dpkg --print-architecture)"; \
 	case "$dpkgArch" in \
+# explicitly target amd64 v1
 		amd64) \
 			setConfs="$setConfs \
 				BR2_x86_64=y \
+				BR2_x86_x86_64=y \
 			"; \
 			;; \
 			\
