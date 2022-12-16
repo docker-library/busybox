@@ -150,7 +150,7 @@ RUN set -eux; \
 		} \
 	' ../buildroot/system/device_table.txt | sh -eux
 
-# create missing home directories
+# create missing home directories and ensure /usr/bin/env exists
 RUN set -eux; \
 	cd rootfs; \
 	for userHome in $(awk -F ':' '{ print $3 ":" $4 "=" $6 }' etc/passwd); do \
@@ -162,10 +162,14 @@ RUN set -eux; \
 			chown "$user" "$home"; \
 			chmod 755 "$home"; \
 		fi; \
-	done
+	done; \
+	if [ ! -s usr/bin/env ] && [ -s bin/env ]; then \
+		mkdir -p usr/bin; \
+		ln -s ../../bin/env usr/bin/; \
+	fi
 
 # test and make sure it works
-RUN chroot rootfs /bin/sh -xec 'true'
+RUN chroot rootfs /usr/bin/env sh -xec 'true'
 
 # ensure correct timezone (UTC)
 RUN set -eux; \
