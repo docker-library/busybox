@@ -51,8 +51,7 @@ join() {
 	echo "${out#$sep}"
 }
 
-# if stable is 1.32.1 and unstable is 1.33.0, we want busybox:1.33 to point to unstable but busybox:1 (and busybox:latest) to point to stable
-# since stable always comes first, we'll just let it take all the tags it calculates, and use this to remove any overlap when we process unstable :)
+# make sure generic tags like "latest", "1", etc only get used once
 declare -A usedTags=()
 _tags() {
 	local tag first=
@@ -75,7 +74,6 @@ _tags() {
 	return 0
 }
 
-allVersions=()
 for version; do
 	export version
 
@@ -83,12 +81,7 @@ for version; do
 	eval "variants=( $variants )"
 
 	fullVersion="$(jq -r '.[env.version].version' versions.json)"
-	allVersions+=( "$fullVersion" )
-	latestVersion="$(xargs -n1 <<<"${allVersions[*]}" | sort -V | tail -1)"
-	if [ "$latestVersion" != "$fullVersion" ]; then
-		# if "unstable" is older than "stable" (1.32.0 unstable vs 1.32.1 stable, for example), skip unstable
-		continue
-	fi
+	stability="$(jq -r '.[env.version].stability' versions.json)"
 
 	versionAliases=()
 	while [ "${fullVersion%.*}" != "$fullVersion" ]; do
@@ -97,7 +90,7 @@ for version; do
 	done
 	versionAliases+=(
 		$fullVersion
-		$version # "stable", "unstable"
+		$stability # "stable", "unstable"
 		latest
 	)
 
