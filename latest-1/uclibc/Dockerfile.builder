@@ -210,8 +210,9 @@ ENV PATH /usr/src/buildroot/output/host/usr/bin:$PATH
 # sub   1024g/2C766641 2006-12-12
 RUN gpg --batch --keyserver keyserver.ubuntu.com --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
 
-ENV BUSYBOX_VERSION 1.34.1
-ENV BUSYBOX_SHA256 415fbd89e5344c96acf449d94a6f956dbed62e18e835fc83e064db33a34bd549
+# https://busybox.net: 26 December 2021
+ENV BUSYBOX_VERSION 1.35.0
+ENV BUSYBOX_SHA256 faeeb244c35a348a334f4a59e44626ee870fb07b6884d68c10ae8bc19f83a694
 
 RUN set -eux; \
 	tarball="busybox-${BUSYBOX_VERSION}.tar.bz2"; \

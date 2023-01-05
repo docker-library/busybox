@@ -5,7 +5,7 @@ cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
 versions=( "$@" )
 if [ "${#versions[@]}" -eq 0 ]; then
-	versions=( stable unstable )
+	versions=( */ )
 	json='{}'
 else
 	json="$(< versions.json)"
@@ -14,13 +14,31 @@ versions=( "${versions[@]%/}" )
 
 busyboxVersions="$(
 	wget -qO- 'https://busybox.net' \
-		| grep -ioE ' -- BusyBox [0-9.]+ [(](un)?stable[)]' \
-		| cut -d' ' -f4- \
-		| sort -rV
+		| grep -oE '[0-9a-zA-Z ]+ -- BusyBox [0-9.]+ [(](un)?stable[)]' \
+		| jq -csR '
+			rtrimstr("\n")
+			| split("\n")
+			| map(
+				split(" -- BusyBox ")
+				| {
+					version: .[1],
+					date: .[0],
+				}
+				| .stability = (.version | gsub(".* [(]|[)]"; ""))
+				| .version |= split(" ")[0]
+			)
+			| sort_by(.version | split(".") | map(tonumber))
+			| reverse
+		'
 )"
-# "1.32.1 (stable)"
-# "1.33.0 (unstable)"
-# ...
+# [
+#  {
+#    "version": "1.36.0",
+#    "date": "3 January 2023",
+#    "stability": "unstable"
+#  },
+#  ...
+# ]
 
 buildrootVersion="$(
 	git ls-remote --tags https://git.busybox.net/buildroot \
@@ -36,22 +54,36 @@ export buildrootVersion
 for version in "${versions[@]}"; do
 	export version
 
-	if ! fullVersion="$(grep -m1 -F " ($version)" <<<"$busyboxVersions")" || [ -z "$fullVersion" ]; then
-		echo >&2 "error: failed to find latest '$version' release"
+	minus="${version#latest}"
+	minus="${minus#-}"
+	: "${minus:=0}"
+	majorMinor="$(jq <<<"$busyboxVersions" -cr --argjson minus "$minus" '
+		map(.version | split(".")[0:2] | join("."))
+		| unique
+		| reverse[$minus]
+	')"
+	if [ -z "$majorMinor" ]; then
+		echo >&2 "error: failed to find '$version' release"
 		exit 1
 	fi
-	fullVersion="${fullVersion%% *}"
+	doc="$(jq <<<"$busyboxVersions" -c --arg majorMinor "$majorMinor" '
+		map(select(
+			.version
+			| startswith($majorMinor + ".")
+		))[0]
+	')"
+
+	fullVersion="$(jq <<<"$doc" -r '.version')"
 	export fullVersion
+
+	echo "$version: $fullVersion"
 
 	sha256="$(wget -qO- "https://busybox.net/downloads/busybox-$fullVersion.tar.bz2.sha256" | cut -d' ' -f1)"
 	export sha256
 
-	echo "$version: $fullVersion"
-
 	json="$(
-		jq <<<"$json" -c '
-			.[env.version] = {
-				version: env.fullVersion,
+		jq <<<"$json" -c --argjson doc "$doc" '
+			.[env.version] = $doc + {
 				sha256: env.sha256,
 				buildroot: {
 					version: env.buildrootVersion,

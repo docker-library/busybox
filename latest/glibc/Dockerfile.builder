@@ -4,21 +4,19 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM alpine:3.17
+FROM debian:bullseye-slim
 
 RUN set -eux; \
-	apk add --no-cache \
+	apt-get update; \
+	apt-get install -y \
 		bzip2 \
-		coreutils \
 		curl \
 		gcc \
-		gnupg \
-		linux-headers \
+		gnupg dirmngr \
 		make \
-		musl-dev \
 		patch \
-		tzdata \
-	;
+	; \
+	rm -rf /var/lib/apt/lists/*
 
 # pub   1024D/ACC9965B 2006-12-12
 #       Key fingerprint = C9E9 416F 76E6 10DB D09D  040F 47B7 0C55 ACC9 965B
@@ -26,8 +24,9 @@ RUN set -eux; \
 # sub   1024g/2C766641 2006-12-12
 RUN gpg --batch --keyserver keyserver.ubuntu.com --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
 
-ENV BUSYBOX_VERSION 1.34.1
-ENV BUSYBOX_SHA256 415fbd89e5344c96acf449d94a6f956dbed62e18e835fc83e064db33a34bd549
+# https://busybox.net: 3 January 2023
+ENV BUSYBOX_VERSION 1.36.0
+ENV BUSYBOX_SHA256 542750c8af7cb2630e201780b4f99f3dcceeb06f505b479ec68241c1e6af61a5
 
 RUN set -eux; \
 	tarball="busybox-${BUSYBOX_VERSION}.tar.bz2"; \
@@ -49,17 +48,11 @@ RUN set -eux; \
 		CONFIG_FEATURE_AR_LONG_FILENAMES=y \
 # CONFIG_LAST_SUPPORTED_WCHAR: see https://github.com/docker-library/busybox/issues/13 (UTF-8 input)
 		CONFIG_LAST_SUPPORTED_WCHAR=0 \
-		CONFIG_STATIC=y \
+# As long as we rely on libnss (see below), we have to have libc.so anyhow, so we've removed CONFIG_STATIC here... :cry:
 	'; \
 	\
 	unsetConfs=' \
 		CONFIG_FEATURE_SYNC_FANCY \
-		\
-# see https://wiki.musl-libc.org/wiki/Building_Busybox
-		CONFIG_FEATURE_HAVE_RPC \
-		CONFIG_FEATURE_INETD_RPC \
-		CONFIG_FEATURE_UTMP \
-		CONFIG_FEATURE_WTMP \
 	'; \
 	\
 	make defconfig; \
@@ -98,13 +91,41 @@ RUN set -eux; \
 	mkdir -p rootfs/bin; \
 	ln -vL busybox rootfs/bin/; \
 	\
-# copy simplified getconf port from Alpine
-	aportsVersion="v$(cat /etc/alpine-release)"; \
-	curl -fsSL \
-		"https://github.com/alpinelinux/aports/raw/$aportsVersion/main/musl/getconf.c" \
-		-o /usr/src/getconf.c \
+# copy "getconf" from Debian
+	getconf="$(which getconf)"; \
+	ln -vL "$getconf" rootfs/bin/getconf; \
+	\
+# hack hack hack hack hack
+# with glibc, busybox (static or not) uses libnss for DNS resolution :(
+	mkdir -p rootfs/etc; \
+	cp /etc/nsswitch.conf rootfs/etc/; \
+	mkdir -p rootfs/lib; \
+	ln -sT lib rootfs/lib64; \
+	gccMultiarch="$(gcc -print-multiarch)"; \
+	set -- \
+		rootfs/bin/busybox \
+		rootfs/bin/getconf \
+		/lib/"$gccMultiarch"/libnss*.so.* \
+# libpthread is part of glibc: https://stackoverflow.com/a/11210463/433558
+		/lib/"$gccMultiarch"/libpthread*.so.* \
 	; \
-	gcc -o rootfs/bin/getconf -static -Os /usr/src/getconf.c; \
+	while [ "$#" -gt 0 ]; do \
+		f="$1"; shift; \
+		fn="$(basename "$f")"; \
+		if [ -e "rootfs/lib/$fn" ]; then continue; fi; \
+		if [ "${f#rootfs/}" = "$f" ]; then \
+			if [ "${fn#ld-}" = "$fn" ]; then \
+				ln -vL "$f" "rootfs/lib/$fn"; \
+			else \
+				cp -v "$f" "rootfs/lib/$fn"; \
+			fi; \
+		fi; \
+		ldd="$(ldd "$f" | awk ' \
+			$1 ~ /^\// { print $1; next } \
+			$2 == "=>" && $3 ~ /^\// { print $3; next } \
+		')"; \
+		set -- "$@" $ldd; \
+	done; \
 	chroot rootfs /bin/getconf _NPROCESSORS_ONLN; \
 	\
 	chroot rootfs /bin/busybox --install /bin

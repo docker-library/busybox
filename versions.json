@@ -1,26 +1,30 @@
 {
-  "stable": {
+  "latest": {
     "buildroot": {
       "version": "2022.11"
     },
-    "sha256": "415fbd89e5344c96acf449d94a6f956dbed62e18e835fc83e064db33a34bd549",
-    "variants": [
-      "glibc",
-      "uclibc",
-      "musl"
-    ],
-    "version": "1.34.1"
-  },
-  "unstable": {
-    "buildroot": {
-      "version": "2022.11"
-    },
+    "date": "3 January 2023",
     "sha256": "542750c8af7cb2630e201780b4f99f3dcceeb06f505b479ec68241c1e6af61a5",
+    "stability": "unstable",
     "variants": [
       "glibc",
       "uclibc",
       "musl"
     ],
     "version": "1.36.0"
+  },
+  "latest-1": {
+    "buildroot": {
+      "version": "2022.11"
+    },
+    "date": "26 December 2021",
+    "sha256": "faeeb244c35a348a334f4a59e44626ee870fb07b6884d68c10ae8bc19f83a694",
+    "stability": "unstable",
+    "variants": [
+      "glibc",
+      "uclibc",
+      "musl"
+    ],
+    "version": "1.35.0"
   }
 }
