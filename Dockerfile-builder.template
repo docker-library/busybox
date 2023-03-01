@@ -265,6 +265,8 @@ RUN set -eux; \
 		CONFIG_FEATURE_UTMP \
 		CONFIG_FEATURE_WTMP \
 {{ ) else "" end -}}
+		CONFIG_SHA1_HWACCEL \
+		CONFIG_SHA256_HWACCEL \
 	'; \
 	\
 	make defconfig; \
