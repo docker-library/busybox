@@ -239,6 +239,8 @@ RUN set -eux; \
 	\
 	unsetConfs=' \
 		CONFIG_FEATURE_SYNC_FANCY \
+# disable SHA hardware acceleration (temporarily), as it fails with SIGILL on some of GitHub's common CI systems; https://bugs.busybox.net/show_bug.cgi?id=15236
+		CONFIG_SHA256_HWACCEL CONFIG_SHA1_HWACCEL \
 	'; \
 	\
 	make defconfig; \

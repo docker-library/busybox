@@ -61,6 +61,8 @@ RUN set -eux; \
 		CONFIG_FEATURE_INETD_RPC \
 		CONFIG_FEATURE_UTMP \
 		CONFIG_FEATURE_WTMP \
+# disable SHA hardware acceleration (temporarily), as it fails with SIGILL on some of GitHub's common CI systems; https://bugs.busybox.net/show_bug.cgi?id=15236
+		CONFIG_SHA256_HWACCEL CONFIG_SHA1_HWACCEL \
 	'; \
 	\
 	make defconfig; \
