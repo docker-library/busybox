@@ -1,7 +1,7 @@
 {
   "latest": {
     "buildroot": {
-      "version": "2022.11.2"
+      "version": "2023.02"
     },
     "date": "3 January 2023",
     "sha256": "542750c8af7cb2630e201780b4f99f3dcceeb06f505b479ec68241c1e6af61a5",
@@ -15,7 +15,7 @@
   },
   "latest-1": {
     "buildroot": {
-      "version": "2022.11.2"
+      "version": "2023.02"
     },
     "date": "26 December 2021",
     "sha256": "faeeb244c35a348a334f4a59e44626ee870fb07b6884d68c10ae8bc19f83a694",
