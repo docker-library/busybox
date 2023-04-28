@@ -12,7 +12,7 @@ RUN set -eux; \
 		bzip2 \
 		curl \
 		gcc \
-		gnupg dirmngr \
+		gnupg \
 		make \
 		patch \
 	; \
