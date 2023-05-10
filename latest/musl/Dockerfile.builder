@@ -24,7 +24,7 @@ RUN set -eux; \
 #       Key fingerprint = C9E9 416F 76E6 10DB D09D  040F 47B7 0C55 ACC9 965B
 # uid                  Denis Vlasenko <vda.linux@googlemail.com>
 # sub   1024g/2C766641 2006-12-12
-RUN gpg --batch --keyserver keyserver.ubuntu.com --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
+RUN mkdir -p ~/.gnupg && gpg --batch --keyserver keyserver.ubuntu.com --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
 
 # https://busybox.net: 3 January 2023
 ENV BUSYBOX_VERSION 1.36.0
