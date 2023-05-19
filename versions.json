@@ -3,15 +3,15 @@
     "buildroot": {
       "version": "2023.02"
     },
-    "date": "3 January 2023",
-    "sha256": "542750c8af7cb2630e201780b4f99f3dcceeb06f505b479ec68241c1e6af61a5",
-    "stability": "unstable",
+    "date": "19 May 2023",
+    "sha256": "b8cc24c9574d809e7279c3be349795c5d5ceb6fdf19ca709f80cde50e47de314",
+    "stability": "stable",
     "variants": [
       "glibc",
       "uclibc",
       "musl"
     ],
-    "version": "1.36.0"
+    "version": "1.36.1"
   },
   "latest-1": {
     "buildroot": {
