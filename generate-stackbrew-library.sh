@@ -90,9 +90,12 @@ for version; do
 	done
 	versionAliases+=(
 		$fullVersion
-		$stability # "stable", "unstable"
-		latest
 	)
+	if [ "$version" = 'latest' ] || [ "$stability" != 'unstable' ]; then
+		# if we have version 1.36.0 labelled as "unstable" and then 1.36.1 is released, we don't want to mark "1.35.0" as the "latest unstable" because that's not true, so only the latest latest latest release can be "unstable"
+		versionAliases+=( $stability )
+	fi
+	versionAliases+=( latest )
 
 	declare -A archLatestDir=()
 	for variant in "${variants[@]}"; do
