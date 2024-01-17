@@ -13,7 +13,17 @@ for dir; do
 	(
 		set -x
 		docker build -t "$base-builder" -f "$dir/Dockerfile.builder" "$dir"
-		docker run --rm "$base-builder" tar cC rootfs . | xz -T0 -z9 > "$dir/busybox.tar.xz"
+		docker run --rm "$base-builder" \
+			tar \
+				--create \
+				--directory rootfs \
+				--numeric-owner \
+				--transform 's,^./,,' \
+				--sort name \
+				--mtime /usr/src/busybox.SOURCE_DATE_EPOCH --clamp-mtime \
+				. \
+			| xz -T0 -z9 > "$dir/busybox.tar.xz"
+		sha256sum "$dir/busybox.tar.xz"
 		docker build -t "$base-test" "$dir"
 		docker run --rm "$base-test" sh -xec 'true'
 

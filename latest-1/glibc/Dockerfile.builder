@@ -34,13 +34,27 @@ RUN set -eux; \
 	curl -fL -o busybox.tar.bz2 "https://busybox.net/downloads/$tarball"; \
 	echo "$BUSYBOX_SHA256 *busybox.tar.bz2" | sha256sum -c -; \
 	gpg --batch --verify busybox.tar.bz2.sig busybox.tar.bz2; \
-	mkdir -p /usr/src/busybox; \
-	tar -xf busybox.tar.bz2 -C /usr/src/busybox --strip-components 1; \
-	rm busybox.tar.bz2*
+# Alpine... 😅
+	mkdir -p /usr/src; \
+	tar -xf busybox.tar.bz2 -C /usr/src "busybox-$BUSYBOX_VERSION"; \
+	mv "/usr/src/busybox-$BUSYBOX_VERSION" /usr/src/busybox; \
+	rm busybox.tar.bz2*; \
+	\
+# save the tarball's filesystem timestamp persistently (in case building busybox modifies it) so we can use it for reproducible rootfs later
+	SOURCE_DATE_EPOCH="$(stat -c '%Y' /usr/src/busybox | tee /usr/src/busybox.SOURCE_DATE_EPOCH)"; \
+	date="$(date -d "@$SOURCE_DATE_EPOCH" '+%Y%m%d%H%M.%S')"; \
+	touch -t "$date" /usr/src/busybox.SOURCE_DATE_EPOCH; \
+# for logging validation/edification
+	date --date "@$SOURCE_DATE_EPOCH" --rfc-2822
 
 WORKDIR /usr/src/busybox
 
 RUN set -eux; \
+	\
+# build date/time gets embedded in the BusyBox binary -- SOURCE_DATE_EPOCH should override that
+	SOURCE_DATE_EPOCH="$(cat /usr/src/busybox.SOURCE_DATE_EPOCH)"; \
+	export SOURCE_DATE_EPOCH; \
+# (has to be set in the config stage for making sure "AUTOCONF_TIMESTAMP" is embedded correctly)
 	\
 	setConfs=' \
 		CONFIG_AR=y \
@@ -48,7 +62,7 @@ RUN set -eux; \
 		CONFIG_FEATURE_AR_LONG_FILENAMES=y \
 # CONFIG_LAST_SUPPORTED_WCHAR: see https://github.com/docker-library/busybox/issues/13 (UTF-8 input)
 		CONFIG_LAST_SUPPORTED_WCHAR=0 \
-# As long as we rely on libnss (see below), we have to have libc.so anyhow, so we've removed CONFIG_STATIC here... :cry:
+# As long as we rely on libnss (see below), we have to have libc.so anyhow, so we've removed CONFIG_STATIC here... 😭
 	'; \
 	\
 	unsetConfs=' \
@@ -130,6 +144,7 @@ RUN set -eux; \
 	done; \
 	chroot rootfs /bin/getconf _NPROCESSORS_ONLN; \
 	\
+# TODO make this create symlinks instead so the output tarball is cleaner (but "-s" outputs absolute symlinks which is kind of annoying to deal with -- we should also consider letting busybox determine the "install paths"; see "busybox --list-full")
 	chroot rootfs /bin/busybox --install /bin
 
 # install a few extra files from buildroot (/etc/passwd, etc)
