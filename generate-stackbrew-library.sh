@@ -34,6 +34,8 @@ Maintainers: Tianon Gravi <admwiggin@gmail.com> (@tianon),
              Joseph Ferguson <yosifkit@gmail.com> (@yosifkit)
 GitRepo: $gitHubUrl.git
 GitCommit: $selfCommit
+Builder: oci-import
+File: index.json
 EOH
 for arch in "${arches[@]}"; do
 	commit="${archCommits[$arch]}"
@@ -97,6 +99,7 @@ for version; do
 	fi
 	versionAliases+=( latest )
 
+	actualArches=()
 	declare -A archLatestDir=()
 	for variant in "${variants[@]}"; do
 		dir="$version/$variant"
@@ -107,25 +110,31 @@ for version; do
 		variantArches=()
 		for arch in "${arches[@]}"; do
 			archCommit="${archCommits[$arch]}"
-			if wget --quiet --spider -O /dev/null -o /dev/null "$rawGitUrl/$archCommit/$dir/busybox.tar.xz"; then
+			if wget --quiet --spider -O /dev/null -o /dev/null "$rawGitUrl/$archCommit/$dir/$arch/rootfs.tar.gz"; then
 				variantArches+=( "$arch" )
-				: "${archLatestDir[$arch]:=$dir}" # record the first supported directory per architecture for "latest" and friends
+				if [ -z "${archLatestDir[$arch]:-}" ]; then
+					# record the first supported directory per architecture for "latest" and friends
+					archLatestDir["$arch"]="$dir/$arch"
+					actualArches+=( "$arch" )
+				fi
 			fi
 		done
 
-		if _tags "${variantAliases[@]}"; then
+		if [ "${#variantArches[@]}" -gt 0 ] && _tags "${variantAliases[@]}"; then
 			cat <<-EOE
 				Architectures: $(join ', ' "${variantArches[@]}")
-				Directory: $dir
 			EOE
+			for arch in "${variantArches[@]}"; do
+				echo "$arch-Directory: $dir/$arch"
+			done
 		fi
 	done
 
-	if _tags "${versionAliases[@]}"; then
+	if [ "${#actualArches[@]}" -gt 0 ] && _tags "${versionAliases[@]}"; then
 		cat <<-EOE
-			Architectures: $(join ', ' "${arches[@]}")
+			Architectures: $(join ', ' "${actualArches[@]}")
 		EOE
-		for arch in "${arches[@]}"; do
+		for arch in "${actualArches[@]}"; do
 			archDir="${archLatestDir[$arch]}"
 			cat <<-EOA
 				${arch}-Directory: $archDir

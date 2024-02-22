@@ -116,11 +116,12 @@ RUN set -eux; \
 	ln -vL busybox rootfs/bin/; \
 	\
 # copy simplified getconf port from Alpine
-	aportsVersion="v$(cat /etc/alpine-release)"; \
+# https://github.com/alpinelinux/aports/commits/HEAD/main/musl/getconf.c
 	curl -fsSL \
-		"https://github.com/alpinelinux/aports/raw/$aportsVersion/main/musl/getconf.c" \
+		"https://github.com/alpinelinux/aports/raw/48b16204aeeda5bc1f87e49c6b8e23d9abb07c73/main/musl/getconf.c" \
 		-o /usr/src/getconf.c \
 	; \
+	echo 'd87d0cbb3690ae2c5d8cc218349fd8278b93855dd625deaf7ae50e320aad247c */usr/src/getconf.c' | sha256sum -c -; \
 	gcc -o rootfs/bin/getconf -static -Os /usr/src/getconf.c; \
 	chroot rootfs /bin/getconf _NPROCESSORS_ONLN; \
 	\

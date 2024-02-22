@@ -35,10 +35,14 @@ for version; do
 	variants="$(jq -r '.[env.version].variants | map(@sh) | join(" ")' versions.json)"
 	eval "variants=( $variants )"
 
+	# TODO somehow make sure this deletes any content we're not generating (without accidentally deleting potentialy generated tarballs for the things we *do* care about)
+
 	for variant in "${variants[@]}"; do
 		export variant
 
 		echo "processing $version/$variant ..."
+
+		mkdir -p "$version/$variant"
 
 		{
 			generated_warning
