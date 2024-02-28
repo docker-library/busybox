@@ -1,0 +1,19 @@
+{
+	"schemaVersion": 2,
+	"mediaType": "application/vnd.oci.image.index.v1+json",
+	"manifests": [
+		{
+			"mediaType": "application/vnd.oci.image.manifest.v1+json",
+			"digest": "sha256:8c4284fa9cc28d0b9455f84527de8b58d5d4df00abcd18e47f2f1dc4e89f7ad8",
+			"size": 610,
+			"platform": {
+				"architecture": "mips64le",
+				"os": "linux"
+			},
+			"annotations": {
+				"org.opencontainers.image.ref.name": "busybox:1.36.1-glibc",
+				"io.containerd.image.name": "busybox:1.36.1-glibc"
+			}
+		}
+	]
+}
