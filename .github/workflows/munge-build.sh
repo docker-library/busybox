@@ -3,6 +3,14 @@ set -Eeuo pipefail
 
 jq '
 	.matrix.include |= map(
-		.runs.build = "./build.sh " + (.meta.entries[].directory | @sh) + "\n" + (.runs.build | sub(" --file [^ ]+ "; " "))
+		.runs.build = (
+			[
+				"dir=" + (.meta.entries[].directory | @sh),
+				"rm -rf \"$dir/$BASHBREW_ARCH\"", # make sure our OCI directory is clean so we can "git diff --exit-code" later
+				"./build.sh \"$dir\"",
+				(.runs.build | sub(" --file [^ ]+ "; " ")),
+				empty
+			] | join("\n")
+		)
 	)
 ' "$@"

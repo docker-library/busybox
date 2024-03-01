@@ -18,6 +18,8 @@ RUN set -eux; \
 		musl-dev \
 		patch \
 		tzdata \
+# busybox's tar ironically does not maintain mtime of directories correctly (which we need for SOURCE_DATE_EPOCH / reproducibility)
+		tar \
 	;
 
 # pub   1024D/ACC9965B 2006-12-12
@@ -36,13 +38,27 @@ RUN set -eux; \
 	curl -fL -o busybox.tar.bz2 "https://busybox.net/downloads/$tarball"; \
 	echo "$BUSYBOX_SHA256 *busybox.tar.bz2" | sha256sum -c -; \
 	gpg --batch --verify busybox.tar.bz2.sig busybox.tar.bz2; \
-	mkdir -p /usr/src/busybox; \
-	tar -xf busybox.tar.bz2 -C /usr/src/busybox --strip-components 1; \
-	rm busybox.tar.bz2*
+# Alpine... 😅
+	mkdir -p /usr/src; \
+	tar -xf busybox.tar.bz2 -C /usr/src "busybox-$BUSYBOX_VERSION"; \
+	mv "/usr/src/busybox-$BUSYBOX_VERSION" /usr/src/busybox; \
+	rm busybox.tar.bz2*; \
+	\
+# save the tarball's filesystem timestamp persistently (in case building busybox modifies it) so we can use it for reproducible rootfs later
+	SOURCE_DATE_EPOCH="$(stat -c '%Y' /usr/src/busybox | tee /usr/src/busybox.SOURCE_DATE_EPOCH)"; \
+	date="$(date -d "@$SOURCE_DATE_EPOCH" '+%Y%m%d%H%M.%S')"; \
+	touch -t "$date" /usr/src/busybox.SOURCE_DATE_EPOCH; \
+# for logging validation/edification
+	date --date "@$SOURCE_DATE_EPOCH" --rfc-2822
 
 WORKDIR /usr/src/busybox
 
 RUN set -eux; \
+	\
+# build date/time gets embedded in the BusyBox binary -- SOURCE_DATE_EPOCH should override that
+	SOURCE_DATE_EPOCH="$(cat /usr/src/busybox.SOURCE_DATE_EPOCH)"; \
+	export SOURCE_DATE_EPOCH; \
+# (has to be set in the config stage for making sure "AUTOCONF_TIMESTAMP" is embedded correctly)
 	\
 	setConfs=' \
 		CONFIG_AR=y \
@@ -102,14 +118,16 @@ RUN set -eux; \
 	ln -vL busybox rootfs/bin/; \
 	\
 # copy simplified getconf port from Alpine
-	aportsVersion="v$(cat /etc/alpine-release)"; \
+# https://github.com/alpinelinux/aports/commits/HEAD/main/musl/getconf.c
 	curl -fsSL \
-		"https://github.com/alpinelinux/aports/raw/$aportsVersion/main/musl/getconf.c" \
+		"https://github.com/alpinelinux/aports/raw/48b16204aeeda5bc1f87e49c6b8e23d9abb07c73/main/musl/getconf.c" \
 		-o /usr/src/getconf.c \
 	; \
+	echo 'd87d0cbb3690ae2c5d8cc218349fd8278b93855dd625deaf7ae50e320aad247c */usr/src/getconf.c' | sha256sum -c -; \
 	gcc -o rootfs/bin/getconf -static -Os /usr/src/getconf.c; \
 	chroot rootfs /bin/getconf _NPROCESSORS_ONLN; \
 	\
+# TODO make this create symlinks instead so the output tarball is cleaner (but "-s" outputs absolute symlinks which is kind of annoying to deal with -- we should also consider letting busybox determine the "install paths"; see "busybox --list-full")
 	chroot rootfs /bin/busybox --install /bin
 
 # install a few extra files from buildroot (/etc/passwd, etc)
