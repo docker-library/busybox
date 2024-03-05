@@ -112,7 +112,9 @@ for version; do
 			archCommit="${archCommits[$arch]}"
 			if wget --quiet --spider -O /dev/null -o /dev/null "$rawGitUrl/$archCommit/$dir/$arch/rootfs.tar.gz"; then
 				variantArches+=( "$arch" )
-				if [ -z "${archLatestDir[$arch]:-}" ]; then
+				if [ "$arch" = 'riscv64' ] && [[ "$variant" != *uclibc* ]]; then
+					: # do not let "glibc" or "musl" be "latest" on riscv64 until they are no longer based on Debian Unstable / Alpine Edge
+				elif [ -z "${archLatestDir[$arch]:-}" ]; then
 					# record the first supported directory per architecture for "latest" and friends
 					archLatestDir["$arch"]="$dir/$arch"
 					actualArches+=( "$arch" )
