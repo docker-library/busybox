@@ -1,0 +1,19 @@
+{
+	"schemaVersion": 2,
+	"mediaType": "application/vnd.oci.image.index.v1+json",
+	"manifests": [
+		{
+			"mediaType": "application/vnd.oci.image.manifest.v1+json",
+			"digest": "sha256:429bcbf2011c582a734b9f357df8aa5cbbf7e2c52e50e7016cb7a3321652805c",
+			"size": 610,
+			"platform": {
+				"architecture": "s390x",
+				"os": "linux"
+			},
+			"annotations": {
+				"org.opencontainers.image.ref.name": "busybox:1.35.0-glibc",
+				"io.containerd.image.name": "busybox:1.35.0-glibc"
+			}
+		}
+	]
+}

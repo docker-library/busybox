@@ -1,0 +1,23 @@
+{
+	"config": {
+		"Cmd": [
+			"sh"
+		]
+	},
+	"created": "2021-12-26T16:56:57Z",
+	"history": [
+		{
+			"created": "2021-12-26T16:56:57Z",
+			"created_by": "BusyBox 1.35.0 (musl), Alpine 3.19.1"
+		}
+	],
+	"rootfs": {
+		"type": "layers",
+		"diff_ids": [
+			"sha256:6744b57c3c8c61f31ba511e0475c022c32aef4555ad17d7dcbe7f1eca806d027"
+		]
+	},
+	"architecture": "arm",
+	"os": "linux",
+	"variant": "v7"
+}

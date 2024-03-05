@@ -1,0 +1,22 @@
+{
+	"config": {
+		"Cmd": [
+			"sh"
+		]
+	},
+	"created": "2021-12-26T16:56:57Z",
+	"history": [
+		{
+			"created": "2021-12-26T16:56:57Z",
+			"created_by": "BusyBox 1.35.0 (musl), Alpine 3.19.1"
+		}
+	],
+	"rootfs": {
+		"type": "layers",
+		"diff_ids": [
+			"sha256:9233aef43ebf02c228c4a2aa07abb50e3b5eea91ae2a384f0dd11ea98260d1ae"
+		]
+	},
+	"architecture": "s390x",
+	"os": "linux"
+}
