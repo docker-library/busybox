@@ -76,7 +76,7 @@ for version in "${versions[@]}"; do
 	fullVersion="$(jq <<<"$doc" -r '.version')"
 	export fullVersion
 
-	echo "$version: $fullVersion"
+	echo "$version: $fullVersion (buildroot $buildrootVersion)"
 
 	sha256="$(wget -qO- "https://busybox.net/downloads/busybox-$fullVersion.tar.bz2.sha256" | cut -d' ' -f1)"
 	export sha256
