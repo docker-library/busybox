@@ -3,14 +3,14 @@
 	"mediaType": "application/vnd.oci.image.manifest.v1+json",
 	"config": {
 		"mediaType": "application/vnd.oci.image.config.v1+json",
-		"digest": "sha256:23c25518807a447b99381ac33548b6a813ce904b613f11f5e19e1ea70e9c49e8",
-		"size": 394
+		"digest": "sha256:3e5d6b89cabf17ef286be81e92b48a2e7805716dedfe11e5cf193d5d4299b4b1",
+		"size": 392
 	},
 	"layers": [
 		{
 			"mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
-			"digest": "sha256:cd82127e91e4b4656e681824cb3687b64060f91d9b44a695055a3475ac0dcd89",
-			"size": 757887
+			"digest": "sha256:17f2e403ea2d26f4273fd04ddbad63572c518cd870ba7491b7dc184f00ec08ed",
+			"size": 758018
 		}
 	],
 	"annotations": {

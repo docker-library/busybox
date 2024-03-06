@@ -132,7 +132,7 @@ RUN set -eux; \
 
 # install a few extra files from buildroot (/etc/passwd, etc)
 RUN set -eux; \
-	buildrootVersion='2023.11.1'; \
+	buildrootVersion='2024.02'; \
 	for file in \
 		system/device_table.txt \
 		system/skeleton/etc/group \
