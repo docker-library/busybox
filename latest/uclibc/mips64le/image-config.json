@@ -8,13 +8,13 @@
 	"history": [
 		{
 			"created": "2023-05-18T22:34:17Z",
-			"created_by": "BusyBox 1.36.1 (uclibc), Buildroot 2023.11.1, Debian 12"
+			"created_by": "BusyBox 1.36.1 (uclibc), Buildroot 2024.02, Debian 12"
 		}
 	],
 	"rootfs": {
 		"type": "layers",
 		"diff_ids": [
-			"sha256:f0ad144f39de962239b73c3e675012be958ad726df8d61e03fa0d6f1f041e661"
+			"sha256:2f705956567c2aba2fc205cafd8ae214611ae45a147d1951147f50ecb0df9e79"
 		]
 	},
 	"architecture": "mips64le",
