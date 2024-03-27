@@ -1,0 +1,22 @@
+{
+	"config": {
+		"Cmd": [
+			"sh"
+		]
+	},
+	"created": "2023-05-18T22:34:17Z",
+	"history": [
+		{
+			"created": "2023-05-18T22:34:17Z",
+			"created_by": "BusyBox 1.36.1 (uclibc), Buildroot 2024.02.1, Debian trixie"
+		}
+	],
+	"rootfs": {
+		"type": "layers",
+		"diff_ids": [
+			"sha256:83d05872a9c3d61ec8befb5ae1ba28810e277b10906be5ee726584aee7ccece5"
+		]
+	},
+	"architecture": "riscv64",
+	"os": "linux"
+}
