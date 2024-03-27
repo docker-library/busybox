@@ -14,7 +14,7 @@
 	"rootfs": {
 		"type": "layers",
 		"diff_ids": [
-			"sha256:13376822bf050b20c6ff9c38719ddcd941794259e9c191c12b31e34643f0c659"
+			"sha256:557954fb3439dbb144dab30e33a3bde08144ebc595bbc4afd5a73e1268ea64d9"
 		]
 	},
 	"architecture": "s390x",
