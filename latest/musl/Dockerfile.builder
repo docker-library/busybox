@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM alpine:3.19
+FROM alpine:3.20
 
 RUN set -eux; \
 	apk add --no-cache \
@@ -21,9 +21,6 @@ RUN set -eux; \
 # busybox's tar ironically does not maintain mtime of directories correctly (which we need for SOURCE_DATE_EPOCH / reproducibility)
 		tar \
 	;
-
-# https://github.com/alpinelinux/docker-alpine/issues/383
-RUN set -eux; if grep -qF '/edge/' '/etc/apk/repositories'; then apk upgrade --no-cache libssl3 libcrypto3; curl --version; dirmngr --version; fi
 
 # pub   1024D/ACC9965B 2006-12-12
 #       Key fingerprint = C9E9 416F 76E6 10DB D09D  040F 47B7 0C55 ACC9 965B

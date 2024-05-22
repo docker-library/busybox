@@ -7,7 +7,7 @@ jq '
 		.matrix.include[]
 		| select(.name | test(" [(].+[)]") | not) # ignore any existing munged builds
 		| select(.os | startswith("windows-") | not)
-		| select(.meta.froms | any(startswith("debian:") or startswith("alpine:")))
+		| select(.meta.froms | any(startswith("debian:")))
 		| .name += " (unstable)"
 		| .runs.prepare += ([
 			"./hack-unstable.sh " + (.meta.entries[].directory | @sh),
