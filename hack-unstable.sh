@@ -10,5 +10,4 @@ set -x
 # This is used to modify "Dockerfile.builder" for architectures that are not (yet) supported by stable releases (notably, riscv64).
 sed -ri \
 	-e 's/^(FROM debian:)[^ -]+/\1unstable/g' \
-	-e 's/^(FROM alpine:)[^ -]+/\1edge/g' \
 	"${@/%//Dockerfile.builder}"
