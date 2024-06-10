@@ -196,7 +196,8 @@ RUN set -eux; \
 	[ "$(chroot rootfs date +%Z)" = 'UTC' ]
 
 # test and make sure DNS works too
-RUN cp -L /etc/resolv.conf rootfs/etc/; \
+RUN set -eux; \
+	cp -L /etc/resolv.conf rootfs/etc/; \
 	chroot rootfs /bin/sh -xec 'nslookup google.com'; \
 	rm rootfs/etc/resolv.conf
 
