@@ -28,7 +28,7 @@ jobs:
     outputs:
       strategy: ${{ steps.generate-jobs.outputs.strategy }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: docker-library/bashbrew@HEAD
       - id: generate-jobs
         name: Generate Jobs
@@ -50,7 +50,7 @@ jobs:
     env:
       BASHBREW_ARCH: amd64 # TODO consider using "$BASHBREW_SCRIPTS/bashbrew-host-arch.sh" ? (would make it harder to force i386 in our matrix too, so explicit is probably better)
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: docker-library/bashbrew@HEAD # build.sh needs bashbrew
       - name: Prepare Environment
         run: ${{ matrix.runs.prepare }}
