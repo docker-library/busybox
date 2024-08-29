@@ -44,7 +44,7 @@ RUN mkdir -p ~/.gnupg && gpg --batch --keyserver keyserver.ubuntu.com --recv-key
 
 # https://buildroot.org/download.html
 # https://buildroot.org/downloads/?C=M;O=D
-ENV BUILDROOT_VERSION 2024.02.3
+ENV BUILDROOT_VERSION 2024.05.2
 
 RUN set -eux; \
 	tarball="buildroot-${BUILDROOT_VERSION}.tar.xz"; \
@@ -234,6 +234,15 @@ RUN set -eux; \
 	date --date "@$SOURCE_DATE_EPOCH" --rfc-2822
 
 WORKDIR /usr/src/busybox
+
+# https://github.com/docker-library/busybox/issues/198
+# https://bugs.busybox.net/show_bug.cgi?id=15931
+# https://bugs.debian.org/1071648
+RUN set -eux; \
+	curl -fL -o busybox-no-cbq.patch 'https://bugs.busybox.net/attachment.cgi?id=9751'; \
+	echo '6671a12c48dbcefb653fc8403d1f103a1e2eba4a49b1ee9a9c27da8aa2db80d4 *busybox-no-cbq.patch' | sha256sum -c -; \
+	patch -p1 --input=busybox-no-cbq.patch; \
+	rm busybox-no-cbq.patch
 
 RUN set -eux; \
 	\

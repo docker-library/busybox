@@ -53,13 +53,10 @@ WORKDIR /usr/src/busybox
 # https://bugs.busybox.net/show_bug.cgi?id=15931
 # https://bugs.debian.org/1071648
 RUN set -eux; \
-	. /etc/os-release; \
-	if [ "${ID:-}" = 'debian' ] && [ "${VERSION_CODENAME:-}" != 'bookworm' ]; then \
-		curl -fL -o busybox-no-cbq.patch 'https://bugs.busybox.net/attachment.cgi?id=9751'; \
-		echo '6671a12c48dbcefb653fc8403d1f103a1e2eba4a49b1ee9a9c27da8aa2db80d4 *busybox-no-cbq.patch' | sha256sum -c -; \
-		patch -p1 --input=busybox-no-cbq.patch; \
-		rm busybox-no-cbq.patch; \
-	fi
+	curl -fL -o busybox-no-cbq.patch 'https://bugs.busybox.net/attachment.cgi?id=9751'; \
+	echo '6671a12c48dbcefb653fc8403d1f103a1e2eba4a49b1ee9a9c27da8aa2db80d4 *busybox-no-cbq.patch' | sha256sum -c -; \
+	patch -p1 --input=busybox-no-cbq.patch; \
+	rm busybox-no-cbq.patch
 
 RUN set -eux; \
 	\
@@ -159,7 +156,7 @@ RUN set -eux; \
 
 # install a few extra files from buildroot (/etc/passwd, etc)
 RUN set -eux; \
-	buildrootVersion='2024.02.3'; \
+	buildrootVersion='2024.05.2'; \
 	for file in \
 		system/device_table.txt \
 		system/skeleton/etc/group \
