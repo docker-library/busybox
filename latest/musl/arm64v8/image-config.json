@@ -8,13 +8,13 @@
 	"history": [
 		{
 			"created": "2023-05-18T22:34:17Z",
-			"created_by": "BusyBox 1.36.1 (musl), Alpine 3.20.0"
+			"created_by": "BusyBox 1.36.1 (musl), Alpine 3.20.2"
 		}
 	],
 	"rootfs": {
 		"type": "layers",
 		"diff_ids": [
-			"sha256:ed9abdeffee6d9ccbf5e0ebdce3f911048eff2647747f021a974dbfaeb573eb9"
+			"sha256:e6614bf2bd2b40879edcf21e1367aa6f2c6796d61094ca98d37dafd303584985"
 		]
 	},
 	"architecture": "arm64",
