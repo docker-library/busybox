@@ -14,7 +14,7 @@
 	"rootfs": {
 		"type": "layers",
 		"diff_ids": [
-			"sha256:bf28798c59c2b3cea76a5e3146cfc570bea4c518768d535321d2d136349bb731"
+			"sha256:cdd30b03097a601c1d73ca7587e17529732154e11160f9a8d54ac12a738a10fe"
 		]
 	},
 	"architecture": "ppc64le",
