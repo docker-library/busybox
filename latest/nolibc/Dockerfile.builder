@@ -1,10 +1,4 @@
-#
-# NOTE: THIS DOCKERFILE IS GENERATED VIA "apply-templates.sh"
-#
-# PLEASE DO NOT EDIT IT DIRECTLY.
-#
-
-FROM debian:bookworm-slim
+FROM tianon/nolibc
 
 RUN set -eux; \
 	apt-get update; \
@@ -24,9 +18,9 @@ RUN set -eux; \
 # sub   1024g/2C766641 2006-12-12
 RUN mkdir -p ~/.gnupg && gpg --batch --keyserver keyserver.ubuntu.com --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
 
-# https://busybox.net: 27 September 2024
-ENV BUSYBOX_VERSION 1.37.0
-ENV BUSYBOX_SHA256 3311dff32e746499f4df0d5df04d7eb396382d7e108bb9250e7b519b837043a4
+# https://busybox.net: 19 May 2023
+ENV BUSYBOX_VERSION 1.36.1
+ENV BUSYBOX_SHA256 b8cc24c9574d809e7279c3be349795c5d5ceb6fdf19ca709f80cde50e47de314
 
 RUN set -eux; \
 	tarball="busybox-${BUSYBOX_VERSION}.tar.bz2"; \
@@ -53,10 +47,13 @@ WORKDIR /usr/src/busybox
 # https://bugs.busybox.net/show_bug.cgi?id=15931
 # https://bugs.debian.org/1071648
 RUN set -eux; \
-	curl -fL -o busybox-no-cbq.patch 'https://bugs.busybox.net/attachment.cgi?id=9751'; \
-	echo '6671a12c48dbcefb653fc8403d1f103a1e2eba4a49b1ee9a9c27da8aa2db80d4 *busybox-no-cbq.patch' | sha256sum -c -; \
-	patch -p1 --input=busybox-no-cbq.patch; \
-	rm busybox-no-cbq.patch
+	. /etc/os-release; \
+	if [ "${ID:-}" = 'debian' ] && [ "${VERSION_CODENAME:-}" != 'bookworm' ]; then \
+		curl -fL -o busybox-no-cbq.patch 'https://bugs.busybox.net/attachment.cgi?id=9751'; \
+		echo '6671a12c48dbcefb653fc8403d1f103a1e2eba4a49b1ee9a9c27da8aa2db80d4 *busybox-no-cbq.patch' | sha256sum -c -; \
+		patch -p1 --input=busybox-no-cbq.patch; \
+		rm busybox-no-cbq.patch; \
+	fi
 
 RUN set -eux; \
 	\
@@ -71,7 +68,7 @@ RUN set -eux; \
 		CONFIG_FEATURE_AR_LONG_FILENAMES=y \
 # CONFIG_LAST_SUPPORTED_WCHAR: see https://github.com/docker-library/busybox/issues/13 (UTF-8 input)
 		CONFIG_LAST_SUPPORTED_WCHAR=0 \
-# As long as we rely on libnss (see below), we have to have libc.so anyhow, so we've removed CONFIG_STATIC here... 😭
+		CONFIG_STATIC=y \
 	'; \
 	\
 	unsetConfs=' \
@@ -114,41 +111,14 @@ RUN set -eux; \
 	mkdir -p rootfs/bin; \
 	ln -vL busybox rootfs/bin/; \
 	\
-# copy "getconf" from Debian
-	getconf="$(which getconf)"; \
-	ln -vL "$getconf" rootfs/bin/getconf; \
-	\
-# hack hack hack hack hack
-# with glibc, busybox (static or not) uses libnss for DNS resolution :(
-	mkdir -p rootfs/etc; \
-	cp /etc/nsswitch.conf rootfs/etc/; \
-	mkdir -p rootfs/lib; \
-	ln -sT lib rootfs/lib64; \
-	gccMultiarch="$(gcc -print-multiarch)"; \
-	set -- \
-		rootfs/bin/busybox \
-		rootfs/bin/getconf \
-		/lib/"$gccMultiarch"/libnss*.so.* \
-# libpthread is part of glibc: https://stackoverflow.com/a/11210463/433558
-		/lib/"$gccMultiarch"/libpthread*.so.* \
+# copy simplified getconf port from Alpine
+# https://github.com/alpinelinux/aports/commits/HEAD/main/musl/getconf.c
+	curl -fsSL \
+		"https://github.com/alpinelinux/aports/raw/48b16204aeeda5bc1f87e49c6b8e23d9abb07c73/main/musl/getconf.c" \
+		-o /usr/src/getconf.c \
 	; \
-	while [ "$#" -gt 0 ]; do \
-		f="$1"; shift; \
-		fn="$(basename "$f")"; \
-		if [ -e "rootfs/lib/$fn" ]; then continue; fi; \
-		if [ "${f#rootfs/}" = "$f" ]; then \
-			if [ "${fn#ld-}" = "$fn" ]; then \
-				ln -vL "$f" "rootfs/lib/$fn"; \
-			else \
-				cp -v "$f" "rootfs/lib/$fn"; \
-			fi; \
-		fi; \
-		ldd="$(ldd "$f" | awk ' \
-			$1 ~ /^\// { print $1; next } \
-			$2 == "=>" && $3 ~ /^\// { print $3; next } \
-		')"; \
-		set -- "$@" $ldd; \
-	done; \
+	echo 'd87d0cbb3690ae2c5d8cc218349fd8278b93855dd625deaf7ae50e320aad247c */usr/src/getconf.c' | sha256sum -c -; \
+	gcc -o rootfs/bin/getconf $CFLAGS /usr/src/getconf.c; \
 	chroot rootfs /bin/getconf _NPROCESSORS_ONLN; \
 	\
 # TODO make this create symlinks instead so the output tarball is cleaner (but "-s" outputs absolute symlinks which is kind of annoying to deal with -- we should also consider letting busybox determine the "install paths"; see "busybox --list-full")
@@ -156,7 +126,7 @@ RUN set -eux; \
 
 # install a few extra files from buildroot (/etc/passwd, etc)
 RUN set -eux; \
-	buildrootVersion='2024.08'; \
+	buildrootVersion='2024.02.3'; \
 	for file in \
 		system/device_table.txt \
 		system/skeleton/etc/group \
