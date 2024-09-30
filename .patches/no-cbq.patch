@@ -1,0 +1,161 @@
+Description: remove CBQ functionality
+Author: Tianon Gravi <tianon@debian.org>
+Origin: https://bugs.busybox.net/attachment.cgi?id=9751&action=edit
+
+See:
+- https://github.com/docker-library/busybox/issues/198
+- https://bugs.busybox.net/show_bug.cgi?id=15931
+- https://bugs.debian.org/1071648
+
+See also:
+- https://github.com/torvalds/linux/commit/33241dca486264193ed68167c8eeae1fb197f3df
+- https://github.com/iproute2/iproute2/commit/07ba0af3fee132eddc1c2eab643ff4910181c993
+
+diff --git a/networking/tc.c b/networking/tc.c
+index 3a79fd2d9..753efb9ff 100644
+--- a/networking/tc.c
++++ b/networking/tc.c
+@@ -31,7 +31,7 @@
+ //usage:	"qdisc [handle QHANDLE] [root|"IF_FEATURE_TC_INGRESS("ingress|")"parent CLASSID]\n"
+ /* //usage: "[estimator INTERVAL TIME_CONSTANT]\n" */
+ //usage:	"	[[QDISC_KIND] [help|OPTIONS]]\n"
+-//usage:	"	QDISC_KIND := [p|b]fifo|tbf|prio|cbq|red|etc.\n"
++//usage:	"	QDISC_KIND := [p|b]fifo|tbf|prio|red|etc.\n"
+ //usage:	"qdisc show [dev STRING]"IF_FEATURE_TC_INGRESS(" [ingress]")"\n"
+ //usage:	"class [classid CLASSID] [root|parent CLASSID]\n"
+ //usage:	"	[[QDISC_KIND] [help|OPTIONS] ]\n"
+@@ -224,105 +224,6 @@ static int prio_print_opt(struct rtattr *opt)
+ 	return 0;
+ }
+ 
+-#if 0
+-/* Class Based Queue */
+-static int cbq_parse_opt(int argc, char **argv, struct nlmsghdr *n)
+-{
+-	return 0;
+-}
+-#endif
+-static int cbq_print_opt(struct rtattr *opt)
+-{
+-	struct rtattr *tb[TCA_CBQ_MAX+1];
+-	struct tc_ratespec *r = NULL;
+-	struct tc_cbq_lssopt *lss = NULL;
+-	struct tc_cbq_wrropt *wrr = NULL;
+-	struct tc_cbq_fopt *fopt = NULL;
+-	struct tc_cbq_ovl *ovl = NULL;
+-	const char *const error = "CBQ: too short %s opt";
+-	char buf[64];
+-
+-	if (opt == NULL)
+-		goto done;
+-	parse_rtattr_nested(tb, TCA_CBQ_MAX, opt);
+-
+-	if (tb[TCA_CBQ_RATE]) {
+-		if (RTA_PAYLOAD(tb[TCA_CBQ_RATE]) < sizeof(*r))
+-			bb_error_msg(error, "rate");
+-		else
+-			r = RTA_DATA(tb[TCA_CBQ_RATE]);
+-	}
+-	if (tb[TCA_CBQ_LSSOPT]) {
+-		if (RTA_PAYLOAD(tb[TCA_CBQ_LSSOPT]) < sizeof(*lss))
+-			bb_error_msg(error, "lss");
+-		else
+-			lss = RTA_DATA(tb[TCA_CBQ_LSSOPT]);
+-	}
+-	if (tb[TCA_CBQ_WRROPT]) {
+-		if (RTA_PAYLOAD(tb[TCA_CBQ_WRROPT]) < sizeof(*wrr))
+-			bb_error_msg(error, "wrr");
+-		else
+-			wrr = RTA_DATA(tb[TCA_CBQ_WRROPT]);
+-	}
+-	if (tb[TCA_CBQ_FOPT]) {
+-		if (RTA_PAYLOAD(tb[TCA_CBQ_FOPT]) < sizeof(*fopt))
+-			bb_error_msg(error, "fopt");
+-		else
+-			fopt = RTA_DATA(tb[TCA_CBQ_FOPT]);
+-	}
+-	if (tb[TCA_CBQ_OVL_STRATEGY]) {
+-		if (RTA_PAYLOAD(tb[TCA_CBQ_OVL_STRATEGY]) < sizeof(*ovl))
+-			bb_error_msg("CBQ: too short overlimit strategy %u/%u",
+-				(unsigned) RTA_PAYLOAD(tb[TCA_CBQ_OVL_STRATEGY]),
+-				(unsigned) sizeof(*ovl));
+-		else
+-			ovl = RTA_DATA(tb[TCA_CBQ_OVL_STRATEGY]);
+-	}
+-
+-	if (r) {
+-		print_rate(buf, sizeof(buf), r->rate);
+-		printf("rate %s ", buf);
+-		if (show_details) {
+-			printf("cell %ub ", 1<<r->cell_log);
+-			if (r->mpu)
+-				printf("mpu %ub ", r->mpu);
+-			if (r->overhead)
+-				printf("overhead %ub ", r->overhead);
+-		}
+-	}
+-	if (lss && lss->flags) {
+-		bool comma = false;
+-		bb_putchar('(');
+-		if (lss->flags&TCF_CBQ_LSS_BOUNDED) {
+-			printf("bounded");
+-			comma = true;
+-		}
+-		if (lss->flags&TCF_CBQ_LSS_ISOLATED) {
+-			if (comma)
+-				bb_putchar(',');
+-			printf("isolated");
+-		}
+-		printf(") ");
+-	}
+-	if (wrr) {
+-		if (wrr->priority != TC_CBQ_MAXPRIO)
+-			printf("prio %u", wrr->priority);
+-		else
+-			printf("prio no-transmit");
+-		if (show_details) {
+-			printf("/%u ", wrr->cpriority);
+-			if (wrr->weight != 1) {
+-				print_rate(buf, sizeof(buf), wrr->weight);
+-				printf("weight %s ", buf);
+-			}
+-			if (wrr->allot)
+-				printf("allot %ub ", wrr->allot);
+-		}
+-	}
+- done:
+-	return 0;
+-}
+-
+ static FAST_FUNC int print_qdisc(
+ 		const struct sockaddr_nl *who UNUSED_PARAM,
+ 		struct nlmsghdr *hdr,
+@@ -368,12 +269,10 @@ static FAST_FUNC int print_qdisc(
+ 	if (msg->tcm_info != 1)
+ 		printf("refcnt %d ", msg->tcm_info);
+ 	if (tb[TCA_OPTIONS]) {
+-		static const char _q_[] ALIGN1 = "pfifo_fast\0""cbq\0";
++		static const char _q_[] ALIGN1 = "pfifo_fast\0";
+ 		int qqq = index_in_strings(_q_, name);
+ 		if (qqq == 0) { /* pfifo_fast aka prio */
+ 			prio_print_opt(tb[TCA_OPTIONS]);
+-		} else if (qqq == 1) { /* class based queuing */
+-			cbq_print_opt(tb[TCA_OPTIONS]);
+ 		} else {
+ 			/* don't know how to print options for this qdisc */
+ 			printf("(options for %s)", name);
+@@ -438,13 +337,10 @@ static FAST_FUNC int print_class(
+ 		printf("leaf %x ", msg->tcm_info >> 16);
+ 	/* Do that get_qdisc_kind(RTA_DATA(tb[TCA_KIND])).  */
+ 	if (tb[TCA_OPTIONS]) {
+-		static const char _q_[] ALIGN1 = "pfifo_fast\0""cbq\0";
++		static const char _q_[] ALIGN1 = "pfifo_fast\0";
+ 		int qqq = index_in_strings(_q_, name);
+ 		if (qqq == 0) { /* pfifo_fast aka prio */
+ 			/* nothing. */ /*prio_print_opt(tb[TCA_OPTIONS]);*/
+-		} else if (qqq == 1) { /* class based queuing */
+-			/* cbq_print_copt() is identical to cbq_print_opt(). */
+-			cbq_print_opt(tb[TCA_OPTIONS]);
+ 		} else {
+ 			/* don't know how to print options for this class */
+ 			printf("(options for %s)", name);
