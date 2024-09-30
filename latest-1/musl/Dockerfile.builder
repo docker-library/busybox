@@ -28,9 +28,9 @@ RUN set -eux; \
 # sub   1024g/2C766641 2006-12-12
 RUN mkdir -p ~/.gnupg && gpg --batch --keyserver keyserver.ubuntu.com --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
 
-# https://busybox.net: 26 December 2021
-ENV BUSYBOX_VERSION 1.35.0
-ENV BUSYBOX_SHA256 faeeb244c35a348a334f4a59e44626ee870fb07b6884d68c10ae8bc19f83a694
+# https://busybox.net: 19 May 2023
+ENV BUSYBOX_VERSION 1.36.1
+ENV BUSYBOX_SHA256 b8cc24c9574d809e7279c3be349795c5d5ceb6fdf19ca709f80cde50e47de314
 
 RUN set -eux; \
 	tarball="busybox-${BUSYBOX_VERSION}.tar.bz2"; \
@@ -86,8 +86,6 @@ RUN set -eux; \
 		CONFIG_FEATURE_INETD_RPC \
 		CONFIG_FEATURE_UTMP \
 		CONFIG_FEATURE_WTMP \
-# disable SHA hardware acceleration (temporarily), as it fails with SIGILL on some of GitHub's common CI systems; https://bugs.busybox.net/show_bug.cgi?id=15236
-		CONFIG_SHA256_HWACCEL CONFIG_SHA1_HWACCEL \
 	'; \
 	\
 	make defconfig; \
@@ -141,7 +139,7 @@ RUN set -eux; \
 
 # install a few extra files from buildroot (/etc/passwd, etc)
 RUN set -eux; \
-	buildrootVersion='2024.05.3'; \
+	buildrootVersion='2024.08'; \
 	for file in \
 		system/device_table.txt \
 		system/skeleton/etc/group \

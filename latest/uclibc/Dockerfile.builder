@@ -44,7 +44,7 @@ RUN mkdir -p ~/.gnupg && gpg --batch --keyserver keyserver.ubuntu.com --recv-key
 
 # https://buildroot.org/download.html
 # https://buildroot.org/downloads/?C=M;O=D
-ENV BUILDROOT_VERSION 2024.05.3
+ENV BUILDROOT_VERSION 2024.08
 
 RUN set -eux; \
 	tarball="buildroot-${BUILDROOT_VERSION}.tar.xz"; \
@@ -210,9 +210,9 @@ ENV PATH /usr/src/buildroot/output/host/usr/bin:$PATH
 # sub   1024g/2C766641 2006-12-12
 RUN mkdir -p ~/.gnupg && gpg --batch --keyserver keyserver.ubuntu.com --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
 
-# https://busybox.net: 19 May 2023
-ENV BUSYBOX_VERSION 1.36.1
-ENV BUSYBOX_SHA256 b8cc24c9574d809e7279c3be349795c5d5ceb6fdf19ca709f80cde50e47de314
+# https://busybox.net: 27 September 2024
+ENV BUSYBOX_VERSION 1.37.0
+ENV BUSYBOX_SHA256 3311dff32e746499f4df0d5df04d7eb396382d7e108bb9250e7b519b837043a4
 
 RUN set -eux; \
 	tarball="busybox-${BUSYBOX_VERSION}.tar.bz2"; \

@@ -3,18 +3,18 @@
 	"mediaType": "application/vnd.oci.image.manifest.v1+json",
 	"config": {
 		"mediaType": "application/vnd.oci.image.config.v1+json",
-		"digest": "sha256:79c44c208e4575ed4701e4f94b2ffa98e2591b63a1a4bd5062abaf1c41d96c32",
+		"digest": "sha256:2d8b9ee9501c981326b44de613010f49472bc29775664b336c257b3c848b4e17",
 		"size": 375
 	},
 	"layers": [
 		{
 			"mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
-			"digest": "sha256:1f553cf7fa7b057d86820f44fd2889eacc63859abb1588d132dd8c5b37b87dbd",
-			"size": 849038
+			"digest": "sha256:3abb9a39864f49ab85e89e9ddd322bea6dc74aa0b8e1e74b54648a2c876c872e",
+			"size": 852275
 		}
 	],
 	"annotations": {
 		"org.opencontainers.image.url": "https://github.com/docker-library/busybox",
-		"org.opencontainers.image.version": "1.35.0-musl"
+		"org.opencontainers.image.version": "1.36.1-musl"
 	}
 }
