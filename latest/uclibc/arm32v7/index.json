@@ -4,7 +4,7 @@
 	"manifests": [
 		{
 			"mediaType": "application/vnd.oci.image.manifest.v1+json",
-			"digest": "sha256:7b1dee78b9779b84dbe25afbec313f6e8074f34b89b50545872eeaff2c14d8f4",
+			"digest": "sha256:cdb4c305bb9df808123150a3a2c95c3bdddb730f275009ddd2fb64ba7cca332b",
 			"size": 610,
 			"platform": {
 				"architecture": "arm",
@@ -12,8 +12,8 @@
 				"variant": "v7"
 			},
 			"annotations": {
-				"org.opencontainers.image.ref.name": "busybox:1.36.1-uclibc",
-				"io.containerd.image.name": "busybox:1.36.1-uclibc"
+				"org.opencontainers.image.ref.name": "busybox:1.37.0-uclibc",
+				"io.containerd.image.name": "busybox:1.37.0-uclibc"
 			}
 		}
 	]
