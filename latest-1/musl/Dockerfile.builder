@@ -53,14 +53,15 @@ RUN set -eux; \
 
 WORKDIR /usr/src/busybox
 
-# https://github.com/docker-library/busybox/issues/198
-# https://bugs.busybox.net/show_bug.cgi?id=15931
-# https://bugs.debian.org/1071648
+# apply necessary/minimal patches (see /.patches/ in the top level of the repository)
+COPY \
+	/.patches/no-cbq.patch \
+	./.patches/
 RUN set -eux; \
-	curl -fL -o busybox-no-cbq.patch 'https://bugs.busybox.net/attachment.cgi?id=9751'; \
-	echo '6671a12c48dbcefb653fc8403d1f103a1e2eba4a49b1ee9a9c27da8aa2db80d4 *busybox-no-cbq.patch' | sha256sum -c -; \
-	patch -p1 --input=busybox-no-cbq.patch; \
-	rm busybox-no-cbq.patch
+	for patch in .patches/*.patch; do \
+		patch -p1 --input="$patch"; \
+	done; \
+	rm -rf .patches
 
 RUN set -eux; \
 	\

@@ -35,7 +35,7 @@ for dir; do
 			--load \
 			--tag "$base-builder" \
 			--file "$dir/Dockerfile.builder" \
-			"$dir"
+			. # context is "." so we can access the (shared) ".patches" directory
 
 		oci="$dir/$BASHBREW_ARCH"
 		rm -rf "$oci"
