@@ -4,17 +4,17 @@
 			"sh"
 		]
 	},
-	"created": "2021-12-26T16:56:57Z",
+	"created": "2023-05-18T22:34:17Z",
 	"history": [
 		{
-			"created": "2021-12-26T16:56:57Z",
-			"created_by": "BusyBox 1.35.0 (musl), Alpine 3.20.3"
+			"created": "2023-05-18T22:34:17Z",
+			"created_by": "BusyBox 1.36.1 (musl), Alpine 3.20.3"
 		}
 	],
 	"rootfs": {
 		"type": "layers",
 		"diff_ids": [
-			"sha256:aa30c9b4d075053cdb0380ac9fd221b8ea94ef247c81b0af1e8473891ce5c1d0"
+			"sha256:15f25897a7d1c4f8b1c55913e9fd971cc010c8910e4978afeb0a2e2a995c0d89"
 		]
 	},
 	"architecture": "ppc64le",
