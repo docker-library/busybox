@@ -4,17 +4,17 @@
 			"sh"
 		]
 	},
-	"created": "2021-12-26T16:56:57Z",
+	"created": "2023-05-18T22:34:17Z",
 	"history": [
 		{
-			"created": "2021-12-26T16:56:57Z",
-			"created_by": "BusyBox 1.35.0 (glibc), Debian 12"
+			"created": "2023-05-18T22:34:17Z",
+			"created_by": "BusyBox 1.36.1 (glibc), Debian 12"
 		}
 	],
 	"rootfs": {
 		"type": "layers",
 		"diff_ids": [
-			"sha256:3c50671cd4aee927323fc96c537f0748f8b064e3c3b397378c723046c7477fc0"
+			"sha256:b504862463b68f029eea435da998c90b0851f4b1172bbdeacb48d2b8881c6f03"
 		]
 	},
 	"architecture": "mips64le",
