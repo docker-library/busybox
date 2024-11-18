@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM alpine:3.20
+FROM s390x/alpine:3.20
 
 RUN set -eux; \
 	apk add --no-cache \
