@@ -166,7 +166,7 @@ RUN set -eux; \
 	; do \
 		dir="$(dirname "$file")"; \
 		mkdir -p "../buildroot/$dir"; \
-		curl -fL -o "../buildroot/$file" "https://git.busybox.net/buildroot/plain/$file?id=$buildrootVersion"; \
+		curl -fL -o "../buildroot/$file" "https://gitlab.com/buildroot.org/buildroot/-/raw/$buildrootVersion/$file"; \
 		[ -s "../buildroot/$file" ]; \
 	done; \
 	\
@@ -181,7 +181,7 @@ RUN set -eux; \
 	grep -E '^root::' rootfs/etc/shadow; \
 	sed -ri -e 's/^root::/root:*:/' rootfs/etc/shadow; \
 	grep -E '^root:[*]:' rootfs/etc/shadow; \
-# set expected permissions, etc too (https://git.busybox.net/buildroot/tree/system/device_table.txt)
+# set expected permissions, etc too (https://gitlab.com/buildroot.org/buildroot/-/blob/HEAD/system/device_table.txt)
 	awk ' \
 		!/^#/ { \
 			if ($2 != "d" && $2 != "f") { \
