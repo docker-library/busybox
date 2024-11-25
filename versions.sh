@@ -41,7 +41,7 @@ busyboxVersions="$(
 # ]
 
 buildrootVersion="$(
-	git ls-remote --tags https://git.busybox.net/buildroot \
+	git ls-remote --tags https://gitlab.com/buildroot.org/buildroot.git \
 		| cut -d/ -f3 \
 		| cut -d^ -f1 \
 		| grep -E '^[0-9]+' \

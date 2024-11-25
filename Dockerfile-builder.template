@@ -88,8 +88,8 @@ RUN set -eux; \
 		BR2_TOOLCHAIN_BUILDROOT_GLIBC \
 	'; \
 	\
-# buildroot arches: https://git.busybox.net/buildroot/tree/arch
-# buildroot+uclibc arches: https://git.busybox.net/buildroot/tree/package/uclibc/Config.in ("config BR2_PACKAGE_UCLIBC_ARCH_SUPPORTS")
+# buildroot arches: https://gitlab.com/buildroot.org/buildroot/-/tree/HEAD/arch
+# buildroot+uclibc arches: https://gitlab.com/buildroot.org/buildroot/-/blob/HEAD/package/uclibc/Config.in ("config BR2_PACKAGE_UCLIBC_ARCH_SUPPORTS")
 	dpkgArch="$(dpkg --print-architecture)"; \
 	case "$dpkgArch" in \
 # explicitly target amd64 v1
@@ -112,7 +112,7 @@ RUN set -eux; \
 			\
 # https://wiki.debian.org/ArmEabiPort#Choice_of_minimum_CPU
 # https://github.com/free-electrons/toolchains-builder/blob/db259641eaf5bbcf13f4a3c5003e5436e806770c/configs/arch/armv5-eabi.config
-# https://git.busybox.net/buildroot/tree/arch/Config.in.arm
+# https://gitlab.com/buildroot.org/buildroot/-/blob/HEAD/arch/Config.in.arm
 # (Debian minimums at ARMv4, we minimum at ARMv5 instead)
 		armel) \
 			setConfs="$setConfs \
@@ -127,7 +127,7 @@ RUN set -eux; \
 # "Currently the Debian armhf port requires at least an ARMv7 CPU with Thumb-2 and VFP3D16."
 # https://wiki.debian.org/ArmHardFloatPort#Supported_devices
 # https://github.com/free-electrons/toolchains-builder/blob/db259641eaf5bbcf13f4a3c5003e5436e806770c/configs/arch/armv7-eabihf.config
-# https://git.busybox.net/buildroot/tree/arch/Config.in.arm
+# https://gitlab.com/buildroot.org/buildroot/-/blob/HEAD/arch/Config.in.arm
 		armhf) \
 			setConfs="$setConfs \
 				BR2_arm=y \
@@ -415,7 +415,7 @@ RUN set -eux; \
 	; do \
 		dir="$(dirname "$file")"; \
 		mkdir -p "../buildroot/$dir"; \
-		curl -fL -o "../buildroot/$file" "https://git.busybox.net/buildroot/plain/$file?id=$buildrootVersion"; \
+		curl -fL -o "../buildroot/$file" "https://gitlab.com/buildroot.org/buildroot/-/raw/$buildrootVersion/$file"; \
 		[ -s "../buildroot/$file" ]; \
 	done; \
 	\
@@ -431,7 +431,7 @@ RUN set -eux; \
 	grep -E '^root::' rootfs/etc/shadow; \
 	sed -ri -e 's/^root::/root:*:/' rootfs/etc/shadow; \
 	grep -E '^root:[*]:' rootfs/etc/shadow; \
-# set expected permissions, etc too (https://git.busybox.net/buildroot/tree/system/device_table.txt)
+# set expected permissions, etc too (https://gitlab.com/buildroot.org/buildroot/-/blob/HEAD/system/device_table.txt)
 	awk ' \
 		!/^#/ { \
 			if ($2 != "d" && $2 != "f") { \
