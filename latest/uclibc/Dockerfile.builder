@@ -44,7 +44,7 @@ RUN mkdir -p ~/.gnupg && gpg --batch --keyserver keyserver.ubuntu.com --recv-key
 
 # https://buildroot.org/download.html
 # https://buildroot.org/downloads/?C=M;O=D
-ENV BUILDROOT_VERSION 2024.08.2
+ENV BUILDROOT_VERSION 2024.11
 
 RUN set -eux; \
 	tarball="buildroot-${BUILDROOT_VERSION}.tar.xz"; \
