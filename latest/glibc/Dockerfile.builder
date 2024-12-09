@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM debian:bookworm-slim
+FROM arm64v8/debian:bookworm-slim
 
 RUN set -eux; \
 	apt-get update; \
