@@ -8,7 +8,7 @@
 	"history": [
 		{
 			"created": "2024-09-26T21:31:42Z",
-			"created_by": "BusyBox 1.37.0 (musl), Alpine 3.21.0"
+			"created_by": "BusyBox 1.37.0 (musl), Alpine 3.21.2"
 		}
 	],
 	"rootfs": {
