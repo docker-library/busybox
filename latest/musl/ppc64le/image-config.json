@@ -2,19 +2,22 @@
 	"config": {
 		"Cmd": [
 			"sh"
+		],
+		"Env": [
+			"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 		]
 	},
 	"created": "2024-09-26T21:31:42Z",
 	"history": [
 		{
 			"created": "2024-09-26T21:31:42Z",
-			"created_by": "BusyBox 1.37.0 (musl), Alpine 3.21.2"
+			"created_by": "BusyBox 1.37.0 (musl), Alpine 3.21.3"
 		}
 	],
 	"rootfs": {
 		"type": "layers",
 		"diff_ids": [
-			"sha256:4bc7ab207445b0bcc45c0fe9879bfc50f4317fab9f307228f1897dd93fa790e4"
+			"sha256:a3873f9e75c69209f47129e2bed532bbc6451f387a89d8364a2e8fd4a2545108"
 		]
 	},
 	"architecture": "ppc64le",
