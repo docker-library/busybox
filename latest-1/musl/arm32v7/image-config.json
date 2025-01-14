@@ -2,13 +2,16 @@
 	"config": {
 		"Cmd": [
 			"sh"
+		],
+		"Env": [
+			"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 		]
 	},
 	"created": "2023-05-18T22:34:17Z",
 	"history": [
 		{
 			"created": "2023-05-18T22:34:17Z",
-			"created_by": "BusyBox 1.36.1 (musl), Alpine 3.21.2"
+			"created_by": "BusyBox 1.36.1 (musl), Alpine 3.21.3"
 		}
 	],
 	"rootfs": {
