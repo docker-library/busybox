@@ -20,6 +20,8 @@ RUN set -eux; \
 		tzdata \
 # busybox's tar ironically does not maintain mtime of directories correctly (which we need for SOURCE_DATE_EPOCH / reproducibility)
 		tar \
+# we use dpkg-architecture to pass a sane (userspace) "ARCH" to busybox's Makefile (see below)
+		dpkg-dev dpkg \
 	;
 
 # pub   1024D/ACC9965B 2006-12-12
@@ -120,6 +122,10 @@ RUN set -eux; \
 
 RUN set -eux; \
 	nproc="$(nproc)"; \
+# https://git.busybox.net/busybox/tree/Makefile?h=1_37_stable#n145
+# we need to override SUBARCH explicitly (via ARCH) to avoid "uname -m" which gives the wrong answer for builds like i386 on an amd64 machine because kernel architecture != userspace architecture
+	ARCH="$(dpkg-architecture --query DEB_HOST_ARCH_CPU)"; \
+	export ARCH; \
 	make -j "$nproc" busybox; \
 	./busybox --help; \
 	mkdir -p rootfs/bin; \
