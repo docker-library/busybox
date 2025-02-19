@@ -15,6 +15,8 @@ RUN set -eux; \
 		gnupg \
 		make \
 		patch \
+# we use dpkg-architecture to pass a sane (userspace) "ARCH" to busybox's Makefile (see below)
+		dpkg-dev \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
@@ -296,6 +298,7 @@ RUN set -eux; \
 
 RUN set -eux; \
 	nproc="$(nproc)"; \
+# https://git.busybox.net/busybox/tree/Makefile?h=1_37_stable#n145
 	CROSS_COMPILE="$(basename /usr/src/buildroot/output/host/usr/*-buildroot-linux-uclibc*)"; \
 	export CROSS_COMPILE="$CROSS_COMPILE-"; \
 	make -j "$nproc" busybox; \

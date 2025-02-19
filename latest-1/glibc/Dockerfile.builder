@@ -15,6 +15,8 @@ RUN set -eux; \
 		gnupg \
 		make \
 		patch \
+# we use dpkg-architecture to pass a sane (userspace) "ARCH" to busybox's Makefile (see below)
+		dpkg-dev \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
@@ -110,6 +112,10 @@ RUN set -eux; \
 
 RUN set -eux; \
 	nproc="$(nproc)"; \
+# https://git.busybox.net/busybox/tree/Makefile?h=1_37_stable#n145
+# we need to override SUBARCH explicitly (via ARCH) to avoid "uname -m" which gives the wrong answer for builds like i386 on an amd64 machine because kernel architecture != userspace architecture
+	ARCH="$(dpkg-architecture --query DEB_HOST_ARCH_CPU)"; \
+	export ARCH; \
 	make -j "$nproc" busybox; \
 	./busybox --help; \
 	mkdir -p rootfs/bin; \
