@@ -20,8 +20,6 @@ RUN set -eux; \
 		tzdata \
 # busybox's tar ironically does not maintain mtime of directories correctly (which we need for SOURCE_DATE_EPOCH / reproducibility)
 		tar \
-# we use dpkg-architecture to pass a sane (userspace) "ARCH" to busybox's Makefile (see below)
-		dpkg-dev dpkg \
 	;
 
 # pub   1024D/ACC9965B 2006-12-12
@@ -125,7 +123,20 @@ RUN set -eux; \
 	nproc="$(nproc)"; \
 # https://git.busybox.net/busybox/tree/Makefile?h=1_37_stable#n145
 # we need to override SUBARCH explicitly (via ARCH) to avoid "uname -m" which gives the wrong answer for builds like i386 on an amd64 machine because kernel architecture != userspace architecture
-	ARCH="$(dpkg-architecture --query DEB_HOST_ARCH_CPU)"; \
+# see https://git.busybox.net/busybox/tree/arch?h=1_37_stable#n145 for the only important values this *has* to match (everything else is best-effort, and needs to match the munging in https://git.busybox.net/busybox/tree/Makefile?h=1_37_stable#n185)
+	distroArch="$(apk --print-arch)"; \
+	case "$distroArch" in \
+		amd64 | x86_64)        ARCH='x86_64'  ;; \
+		arm64 | aarch64)       ARCH='aarch64' ;; \
+		armhf | armel | armv*) ARCH='arm'     ;; \
+		i386  | x86)           ARCH='i386'    ;; \
+		mips*)                 ARCH='mips'    ;; \
+		ppc*)                  ARCH='powerpc' ;; \
+		riscv64)               ARCH='riscv64' ;; \
+		s390x)                 ARCH='s390'    ;; \
+		*) echo >&2 "error: unknown architecture: '$distroArch'"; exit 1 ;; \
+	esac; \
+	[ -n "$ARCH" ]; \
 	export ARCH; \
 	make -j "$nproc" busybox; \
 	./busybox --help; \

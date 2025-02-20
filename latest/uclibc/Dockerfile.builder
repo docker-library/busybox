@@ -15,8 +15,6 @@ RUN set -eux; \
 		gnupg \
 		make \
 		patch \
-# we use dpkg-architecture to pass a sane (userspace) "ARCH" to busybox's Makefile (see below)
-		dpkg-dev \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
