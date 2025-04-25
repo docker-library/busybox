@@ -51,11 +51,12 @@ RUN set -eux; \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
-# pub   1024D/59C36319 2009-01-15
-#       Key fingerprint = AB07 D806 D2CE 741F B886  EE50 B025 BA8B 59C3 6319
-# uid                  Peter Korsgaard <jacmet@uclibc.org>
-# sub   2048g/45428075 2009-01-15
-RUN mkdir -p ~/.gnupg && gpg --batch --keyserver keyserver.ubuntu.com --recv-keys AB07D806D2CE741FB886EE50B025BA8B59C36319
+# pub   rsa4096 2019-04-26 [SC] [expires: 2032-04-26]
+#       18C7 DF28 19C1 733D 822D  599E A500 D6EE 9CB0 E540
+# uid           [ unknown] Arnout Vandecappelle <arnout@rnout.be>
+# uid           [ unknown] Arnout Vandecappelle <arnout.vandecappelle@essensium.com>
+# sub   rsa4096 2019-04-26 [E] [expires: 2032-04-26]
+RUN mkdir -p ~/.gnupg && gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 18C7DF2819C1733D822D599EA500D6EE9CB0E540
 
 # https://buildroot.org/download.html
 # https://buildroot.org/downloads/?C=M;O=D
