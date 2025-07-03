@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM alpine:3.22
+FROM riscv64/alpine:3.22
 
 RUN set -eux; \
 	apk add --no-cache \
@@ -40,7 +40,7 @@ RUN set -eux; \
 	gpg --batch --verify busybox.tar.bz2.sig busybox.tar.bz2; \
 # Alpine... 😅
 	mkdir -p /usr/src; \
-	tar -xf busybox.tar.bz2 -C /usr/src "busybox-$BUSYBOX_VERSION"; \
+	tar -xf busybox.tar.bz2 -C /usr/src "busybox-$BUSYBOX_VERSION" || tar -xf busybox.tar.bz2 -C /usr/src "busybox-$BUSYBOX_VERSION"; \
 	mv "/usr/src/busybox-$BUSYBOX_VERSION" /usr/src/busybox; \
 	rm busybox.tar.bz2*; \
 	\
