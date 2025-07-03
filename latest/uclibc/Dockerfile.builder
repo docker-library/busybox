@@ -36,16 +36,15 @@ RUN set -eux; \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
-# pub   rsa4096 2019-04-26 [SC] [expires: 2032-04-26]
-#       18C7 DF28 19C1 733D 822D  599E A500 D6EE 9CB0 E540
-# uid           [ unknown] Arnout Vandecappelle <arnout@rnout.be>
-# uid           [ unknown] Arnout Vandecappelle <arnout.vandecappelle@essensium.com>
-# sub   rsa4096 2019-04-26 [E] [expires: 2032-04-26]
-RUN mkdir -p ~/.gnupg && gpg --batch --keyserver keyserver.ubuntu.com --recv-keys 18C7DF2819C1733D822D599EA500D6EE9CB0E540
+# pub   dsa1024 2009-01-15 [SC]
+#       AB07 D806 D2CE 741F B886  EE50 B025 BA8B 59C3 6319
+# uid           [ unknown] Peter Korsgaard <jacmet@uclibc.org>
+# sub   elg2048 2009-01-15 [E]
+RUN mkdir -p ~/.gnupg && gpg --batch --keyserver keyserver.ubuntu.com --recv-keys AB07D806D2CE741FB886EE50B025BA8B59C36319
 
 # https://buildroot.org/download.html
 # https://buildroot.org/downloads/?C=M;O=D
-ENV BUILDROOT_VERSION 2025.02.3
+ENV BUILDROOT_VERSION 2025.05
 
 RUN set -eux; \
 	tarball="buildroot-${BUILDROOT_VERSION}.tar.xz"; \
