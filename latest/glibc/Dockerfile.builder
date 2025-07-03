@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM debian:bookworm-slim
+FROM ppc64le/debian:bookworm-slim
 
 RUN set -eux; \
 	apt-get update; \
