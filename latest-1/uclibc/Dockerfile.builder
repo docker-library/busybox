@@ -4,11 +4,10 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 
 RUN set -eux; \
-	apt-get update; \
-	apt-get install -y \
+	apt-get install --update -y \
 		bzip2 \
 		curl \
 		gcc \
@@ -16,13 +15,12 @@ RUN set -eux; \
 		make \
 		patch \
 	; \
-	rm -rf /var/lib/apt/lists/*
+	apt-get dist-clean
 
 # grab/use buildroot for its uClibc toolchain
 
 RUN set -eux; \
-	apt-get update; \
-	apt-get install -y \
+	apt-get install --update -y \
 		bc \
 		cpio \
 		dpkg-dev \
@@ -34,7 +32,7 @@ RUN set -eux; \
 		unzip \
 		wget \
 	; \
-	rm -rf /var/lib/apt/lists/*
+	apt-get dist-clean
 
 # pub   dsa1024 2009-01-15 [SC]
 #       AB07 D806 D2CE 741F B886  EE50 B025 BA8B 59C3 6319

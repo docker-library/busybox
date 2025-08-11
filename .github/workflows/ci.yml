@@ -35,7 +35,6 @@ jobs:
         run: |
           strategy="$(GENERATE_STACKBREW_LIBRARY='.github/workflows/fake-gsl.sh' "$BASHBREW_SCRIPTS/github-actions/generate.sh")"
           strategy="$(.github/workflows/munge-build.sh -c <<<"$strategy")"
-          strategy="$(.github/workflows/munge-unstable.sh -c <<<"$strategy")"
 
           EOF="EOF-$RANDOM-$RANDOM-$RANDOM"
           echo "strategy<<$EOF" >> "$GITHUB_OUTPUT"
@@ -65,10 +64,4 @@ jobs:
       - name: '"docker images"'
         run: ${{ matrix.runs.images }}
       - name: Git Diff # see "munge-build.sh"
-        run: |
-          if git diff --exit-code */*/Dockerfile.builder; then # see "hack-unstable.sh" (and "munge-unstable.sh")
-            git diff --exit-code
-          else
-            # for unstable builds, let's leave this in but purely informational (instead of causing CI to fail)
-            git diff
-          fi
+        run: git diff --exit-code
