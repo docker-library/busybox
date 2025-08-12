@@ -1,0 +1,25 @@
+{
+	"config": {
+		"Cmd": [
+			"sh"
+		],
+		"Env": [
+			"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+		]
+	},
+	"created": "2024-09-26T21:31:42Z",
+	"history": [
+		{
+			"created": "2024-09-26T21:31:42Z",
+			"created_by": "BusyBox 1.37.0 (musl), Alpine 3.22.1"
+		}
+	],
+	"rootfs": {
+		"type": "layers",
+		"diff_ids": [
+			"sha256:cdbb549fdcbd2b220a08944d0933948d6744aa0188713e2fd759d949ada283c7"
+		]
+	},
+	"architecture": "riscv64",
+	"os": "linux"
+}
