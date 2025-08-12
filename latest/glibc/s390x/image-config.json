@@ -11,13 +11,13 @@
 	"history": [
 		{
 			"created": "2024-09-26T21:31:42Z",
-			"created_by": "BusyBox 1.37.0 (glibc), Debian 12"
+			"created_by": "BusyBox 1.37.0 (glibc), Debian 13"
 		}
 	],
 	"rootfs": {
 		"type": "layers",
 		"diff_ids": [
-			"sha256:7295826a05b4161ea910ca22d0d169eec293b904f9be138e57cfa4371c559f9d"
+			"sha256:0a9c1744e57a8eeb4de074daef587158f513a9e2cb1c9dcb8cf8b9c526ea97cf"
 		]
 	},
 	"architecture": "s390x",
