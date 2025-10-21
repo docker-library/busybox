@@ -77,6 +77,11 @@ RUN set -eux; \
 # CONFIG_LAST_SUPPORTED_WCHAR: see https://github.com/docker-library/busybox/issues/13 (UTF-8 input)
 		CONFIG_LAST_SUPPORTED_WCHAR=0 \
 		CONFIG_STATIC=y \
+		\
+# https://github.com/docker-library/busybox/issues/232
+# https://git.busybox.net/busybox/tree/miscutils/inotifyd.c?id=6937487be73cd4563b876413277a295a5fe2f32c#n31
+# "default n  # doesn't build on Knoppix 5" 😅😂
+		CONFIG_INOTIFYD=y \
 	'; \
 	\
 	unsetConfs=' \
