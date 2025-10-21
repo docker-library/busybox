@@ -17,7 +17,7 @@
 	"rootfs": {
 		"type": "layers",
 		"diff_ids": [
-			"sha256:a762eed73a5e32148dc7f65c06f2dbf8bced26af1bc9319f39d5f9b32ad34a74"
+			"sha256:76d1fe7596853f90a58c30806e3babec074ff97c1a29d283d3ab242e163197b1"
 		]
 	},
 	"architecture": "arm",
