@@ -76,6 +76,17 @@ _tags() {
 	return 0
 }
 
+_spider() {
+	local code
+	code="$(curl --head --silent --location -o /dev/null --write-out '%{http_code}' "$@")"
+	case "$code" in
+		200) return 0 ;;
+		404) return 1 ;;
+	esac
+	echo >&2 "error: unexpected status code $code while fetching: $*"
+	exit 1
+}
+
 for version; do
 	export version
 
@@ -110,7 +121,7 @@ for version; do
 		variantArches=()
 		for arch in "${arches[@]}"; do
 			archCommit="${archCommits[$arch]}"
-			if wget --quiet --spider -O /dev/null -o /dev/null "$rawGitUrl/$archCommit/$dir/$arch/rootfs.tar.gz"; then
+			if _spider "$rawGitUrl/$archCommit/$dir/$arch/rootfs.tar.gz"; then
 				variantArches+=( "$arch" )
 				if [ -z "${archLatestDir[$arch]:-}" ]; then
 					# record the first supported directory per architecture for "latest" and friends
