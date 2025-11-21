@@ -78,7 +78,7 @@ _tags() {
 
 _spider() {
 	local code
-	code="$(curl --head --silent --location -o /dev/null --write-out '%{http_code}' "$@")"
+	code="$(curl --head --silent --show-error --location --output /dev/null --write-out '%{http_code}' "$@")"
 	case "$code" in
 		200) return 0 ;;
 		404) return 1 ;;
