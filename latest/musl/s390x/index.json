@@ -4,7 +4,7 @@
 	"manifests": [
 		{
 			"mediaType": "application/vnd.oci.image.manifest.v1+json",
-			"digest": "sha256:510295b91981d4672e016a7eec849806c26ef46399efab85b0c5adf175cf93c1",
+			"digest": "sha256:b8875ed193588a77a78bd7b7b7d7a60a8d0b59e92ba406ce12d7d2a7caf633b2",
 			"size": 608,
 			"platform": {
 				"architecture": "s390x",
