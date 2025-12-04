@@ -11,13 +11,13 @@
 	"history": [
 		{
 			"created": "2024-09-26T21:31:42Z",
-			"created_by": "BusyBox 1.37.0 (musl), Alpine 3.22.2"
+			"created_by": "BusyBox 1.37.0 (musl), Alpine 3.23.0"
 		}
 	],
 	"rootfs": {
 		"type": "layers",
 		"diff_ids": [
-			"sha256:719be9eae4b449067bc35e0330413b2531eef7a51867c7a025ad87f784682b39"
+			"sha256:5155aca78e7407bdfe972e81f0a0e2a1740fe8f9482dacfb75882cf54f817560"
 		]
 	},
 	"architecture": "ppc64le",
