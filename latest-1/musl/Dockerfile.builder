@@ -56,6 +56,7 @@ WORKDIR /usr/src/busybox
 # apply necessary/minimal patches (see /.patches/ in the top level of the repository)
 COPY \
 	/.patches/no-cbq.patch \
+	/.patches/hackfix-to-disable-HW-acceleration-for-MD5-SHA1-on-x86-1.36.patch \
 	./.patches/
 RUN set -eux; \
 	for patch in .patches/*.patch; do \
