@@ -11,13 +11,13 @@
 	"history": [
 		{
 			"created": "2024-09-26T21:31:42Z",
-			"created_by": "BusyBox 1.37.0 (musl), Alpine 3.22.2"
+			"created_by": "BusyBox 1.37.0 (musl), Alpine 3.23.0"
 		}
 	],
 	"rootfs": {
 		"type": "layers",
 		"diff_ids": [
-			"sha256:37011602eb45971cf0b74b13a962548d3a338683dda25c1be45de90a589d86b1"
+			"sha256:def9a01407c9c61d411d33e7dd943c9c88f905391ea7e19aaa6dc7c92f97b868"
 		]
 	},
 	"architecture": "s390x",
