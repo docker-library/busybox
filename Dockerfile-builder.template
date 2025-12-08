@@ -265,8 +265,19 @@ WORKDIR /usr/src/busybox
 	(
 		[
 			"no-cbq.patch",
+			if env.variant == "musl" then
+				if .version | startswith("1.36.") then
+					"hackfix-to-disable-HW-acceleration-for-MD5-SHA1-on-x86-1.36.patch"
+				else
+					"hackfix-to-disable-HW-acceleration-for-MD5-SHA1-on-x86.patch"
+				end
+			else empty end,
 			if .version | startswith("1.36.") then empty else
-				"sha1_process_block64_shaNI.patch"
+				if env.variant == "musl" then
+					"sha1_process_block64_shaNI-musl.patch"
+				else
+					"sha1_process_block64_shaNI.patch"
+				end
 			end,
 			empty # trailing comma
 		]
