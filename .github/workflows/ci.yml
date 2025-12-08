@@ -34,6 +34,7 @@ jobs:
         name: Generate Jobs
         run: |
           strategy="$(GENERATE_STACKBREW_LIBRARY='.github/workflows/fake-gsl.sh' "$BASHBREW_SCRIPTS/github-actions/generate.sh")"
+          strategy="$("$BASHBREW_SCRIPTS/github-actions/munge-i386.sh" -c <<<"$strategy")"
           strategy="$(.github/workflows/munge-build.sh -c <<<"$strategy")"
 
           EOF="EOF-$RANDOM-$RANDOM-$RANDOM"
@@ -47,7 +48,7 @@ jobs:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     env:
-      BASHBREW_ARCH: amd64 # TODO consider using "$BASHBREW_SCRIPTS/bashbrew-host-arch.sh" ? (would make it harder to force i386 in our matrix too, so explicit is probably better)
+      BASHBREW_ARCH: ${{ matrix.BASHBREW_ARCH }}
     steps:
       - uses: actions/checkout@v4
       - uses: docker-library/bashbrew@HEAD # build.sh needs bashbrew
