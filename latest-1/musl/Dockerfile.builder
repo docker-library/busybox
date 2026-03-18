@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM alpine:3.23
+FROM arm32v6/alpine:3.23
 
 RUN set -eux; \
 	apk add --no-cache \
