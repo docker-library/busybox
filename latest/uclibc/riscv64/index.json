@@ -4,15 +4,15 @@
 	"manifests": [
 		{
 			"mediaType": "application/vnd.oci.image.manifest.v1+json",
-			"digest": "sha256:fb630a65e8f4f85b0cf58ee3be794d03a41a60b42588e3d7cf2634f31108cc6a",
+			"digest": "sha256:405dd4c3af78147d3bbd56f7875bb3995b0cdda246790659f2a1a12ae38f9da1",
 			"size": 610,
 			"platform": {
 				"architecture": "riscv64",
 				"os": "linux"
 			},
 			"annotations": {
-				"org.opencontainers.image.ref.name": "busybox:1.37.0-uclibc",
-				"io.containerd.image.name": "busybox:1.37.0-uclibc"
+				"org.opencontainers.image.ref.name": "busybox:1.38.0-uclibc",
+				"io.containerd.image.name": "busybox:1.38.0-uclibc"
 			}
 		}
 	]
