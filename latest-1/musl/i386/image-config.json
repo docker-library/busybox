@@ -7,17 +7,17 @@
 			"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 		]
 	},
-	"created": "2023-05-18T22:34:17Z",
+	"created": "2024-09-26T21:31:42Z",
 	"history": [
 		{
-			"created": "2023-05-18T22:34:17Z",
-			"created_by": "BusyBox 1.36.1 (musl), Alpine 3.23.3"
+			"created": "2024-09-26T21:31:42Z",
+			"created_by": "BusyBox 1.37.0 (musl), Alpine 3.23.4"
 		}
 	],
 	"rootfs": {
 		"type": "layers",
 		"diff_ids": [
-			"sha256:1d273ce5855799d0382e0b27f791f6bb946934af721c8ddaa34d8abb4eb637fc"
+			"sha256:d2e130f8dbf4424fffe6f7d68ac058246b4ba2b099722419b33d21559f32d534"
 		]
 	},
 	"architecture": "386",

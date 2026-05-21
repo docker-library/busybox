@@ -1,7 +1,21 @@
 {
   "latest": {
     "buildroot": {
-      "version": "2025.11.3"
+      "version": "2026.02.2"
+    },
+    "date": "13 May 2026",
+    "sha256": "34f9ea6ff8636f2c9241153b9114eefa9e65674a45318ae1ef95bb5f31c53bb2",
+    "stability": "unstable",
+    "variants": [
+      "glibc",
+      "uclibc",
+      "musl"
+    ],
+    "version": "1.38.0"
+  },
+  "latest-1": {
+    "buildroot": {
+      "version": "2026.02.2"
     },
     "date": "27 September 2024",
     "sha256": "3311dff32e746499f4df0d5df04d7eb396382d7e108bb9250e7b519b837043a4",
@@ -12,19 +26,5 @@
       "musl"
     ],
     "version": "1.37.0"
-  },
-  "latest-1": {
-    "buildroot": {
-      "version": "2025.11.3"
-    },
-    "date": "19 May 2023",
-    "sha256": "b8cc24c9574d809e7279c3be349795c5d5ceb6fdf19ca709f80cde50e47de314",
-    "stability": "stable",
-    "variants": [
-      "glibc",
-      "uclibc",
-      "musl"
-    ],
-    "version": "1.36.1"
   }
 }

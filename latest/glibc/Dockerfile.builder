@@ -23,9 +23,9 @@ RUN set -eux; \
 # sub   1024g/2C766641 2006-12-12
 RUN mkdir -p ~/.gnupg && gpg --batch --keyserver keyserver.ubuntu.com --recv-keys C9E9416F76E610DBD09D040F47B70C55ACC9965B
 
-# https://busybox.net: 27 September 2024
-ENV BUSYBOX_VERSION 1.37.0
-ENV BUSYBOX_SHA256 3311dff32e746499f4df0d5df04d7eb396382d7e108bb9250e7b519b837043a4
+# https://busybox.net: 13 May 2026
+ENV BUSYBOX_VERSION 1.38.0
+ENV BUSYBOX_SHA256 34f9ea6ff8636f2c9241153b9114eefa9e65674a45318ae1ef95bb5f31c53bb2
 
 RUN set -eux; \
 	tarball="busybox-${BUSYBOX_VERSION}.tar.bz2"; \
@@ -51,7 +51,6 @@ WORKDIR /usr/src/busybox
 # apply necessary/minimal patches (see /.patches/ in the top level of the repository)
 COPY \
 	/.patches/no-cbq.patch \
-	/.patches/sha1_process_block64_shaNI.patch \
 	./.patches/
 RUN set -eux; \
 	for patch in .patches/*.patch; do \
@@ -179,7 +178,7 @@ RUN set -eux; \
 
 # install a few extra files from buildroot (/etc/passwd, etc)
 RUN set -eux; \
-	buildrootVersion='2025.11.3'; \
+	buildrootVersion='2026.02.2'; \
 	for file in \
 		system/device_table.txt \
 		system/skeleton/etc/group \

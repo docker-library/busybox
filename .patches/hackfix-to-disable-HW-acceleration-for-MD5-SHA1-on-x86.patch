@@ -1,3 +1,5 @@
+Refreshed-By: Tianon Gravi <tianon@debian.org> (2026-05-20 - for BusyBox 1.38.0)
+
 Description: fix "read-only segment has dynamic relocations" on musl + i386
 Bug-Gentoo: https://bugs.gentoo.org/933771
 Origin: https://git.alpinelinux.org/aports/tree/main/busybox/0023-Hackfix-to-disable-HW-acceleration-for-MD5-SHA1-on-x.patch?id=bfc5ced82296a4bd72e9dde34449b066682bd353
@@ -19,11 +21,11 @@ See: http://lists.busybox.net/pipermail/busybox/2023-January/090078.html
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/libbb/hash_md5_sha.c b/libbb/hash_md5_sha.c
-index 57a801459..96e9731c4 100644
+index 9ebda232a..307e08a7f 100644
 --- a/libbb/hash_md5_sha.c
 +++ b/libbb/hash_md5_sha.c
 @@ -14,7 +14,7 @@
- #define NEED_SHA512 (ENABLE_SHA512SUM || ENABLE_USE_BB_CRYPT_SHA)
+ #define NEED_SHA512 (ENABLE_SHA512SUM || ENABLE_SHA384SUM || ENABLE_USE_BB_CRYPT_SHA)
  
  #if ENABLE_SHA1_HWACCEL || ENABLE_SHA256_HWACCEL
 -# if defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
@@ -40,7 +42,7 @@ index 57a801459..96e9731c4 100644
  	{
  		int ni = shaNI;
  		if (!ni)
-@@ -1243,7 +1243,7 @@ void FAST_FUNC sha256_begin(sha256_ctx_t *ctx)
+@@ -1252,7 +1252,7 @@ void FAST_FUNC sha256_begin(sha256_ctx_t *ctx)
  	/*ctx->total64 = 0; - done by prepending two 32-bit zeros to init256 */
  	ctx->process_block = sha256_process_block64;
  #if ENABLE_SHA256_HWACCEL
@@ -49,3 +51,13 @@ index 57a801459..96e9731c4 100644
  	{
  		int ni = shaNI;
  		if (!ni)
+@@ -1332,7 +1332,7 @@ unsigned FAST_FUNC sha1_end(sha1_ctx_t *ctx, void *resbuf)
+ 	hash_size = 8;
+ 	if (ctx->process_block == sha1_process_block64
+ #if ENABLE_SHA1_HWACCEL
+-# if defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
++# if defined(__GNUC__) && defined(__x86_64__)
+ 	 || ctx->process_block == sha1_process_block64_shaNI
+ # endif
+ #endif
+

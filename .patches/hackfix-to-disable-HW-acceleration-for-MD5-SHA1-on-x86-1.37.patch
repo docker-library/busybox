@@ -1,4 +1,4 @@
-Description: fix "read-only segment has dynamic relocations" on musl + i386 (1.36-specific patch)
+Description: fix "read-only segment has dynamic relocations" on musl + i386
 Bug-Gentoo: https://bugs.gentoo.org/933771
 Origin: https://git.alpinelinux.org/aports/tree/main/busybox/0023-Hackfix-to-disable-HW-acceleration-for-MD5-SHA1-on-x.patch?id=bfc5ced82296a4bd72e9dde34449b066682bd353
 Origin-GitLab: https://gitlab.alpinelinux.org/alpine/aports/-/blob/bfc5ced82296a4bd72e9dde34449b066682bd353/main/busybox/0023-Hackfix-to-disable-HW-acceleration-for-MD5-SHA1-on-x.patch
@@ -28,7 +28,7 @@ index 57a801459..96e9731c4 100644
  #if ENABLE_SHA1_HWACCEL || ENABLE_SHA256_HWACCEL
 -# if defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
 +# if defined(__GNUC__) && defined(__x86_64__)
- static void cpuid(unsigned *eax, unsigned *ebx, unsigned *ecx, unsigned *edx)
+ static void cpuid_eax_ebx_ecx(unsigned *eax, unsigned *ebx, unsigned *ecx, unsigned *edx)
  {
  	asm ("cpuid"
 @@ -1191,7 +1191,7 @@ void FAST_FUNC sha1_begin(sha1_ctx_t *ctx)
