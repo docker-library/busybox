@@ -4,7 +4,7 @@
 	"manifests": [
 		{
 			"mediaType": "application/vnd.oci.image.manifest.v1+json",
-			"digest": "sha256:1f0a9a68e00d83f32b498c36b7c71dad2fec88f4ba2d2e6162db6bbd2861757e",
+			"digest": "sha256:f57fe4dc64e8e0bd43bdfe62a84d7624293a439ee5dc9b82b7d3b9ee41554db3",
 			"size": 610,
 			"platform": {
 				"architecture": "386",
