@@ -54,7 +54,7 @@ RUN set -eux; \
 
 # https://buildroot.org/download.html
 # https://buildroot.org/downloads/?C=M;O=D
-ENV BUILDROOT_VERSION 2026.02.2
+ENV BUILDROOT_VERSION 2026.05.1
 
 RUN set -eux; \
 	tarball="buildroot-${BUILDROOT_VERSION}.tar.xz"; \

@@ -1,7 +1,7 @@
 {
   "latest": {
     "buildroot": {
-      "version": "2026.02.2"
+      "version": "2026.05.1"
     },
     "date": "13 May 2026",
     "sha256": "34f9ea6ff8636f2c9241153b9114eefa9e65674a45318ae1ef95bb5f31c53bb2",
@@ -15,7 +15,7 @@
   },
   "latest-1": {
     "buildroot": {
-      "version": "2026.02.2"
+      "version": "2026.05.1"
     },
     "date": "27 September 2024",
     "sha256": "3311dff32e746499f4df0d5df04d7eb396382d7e108bb9250e7b519b837043a4",
