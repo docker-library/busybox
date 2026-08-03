@@ -123,7 +123,6 @@ RUN set -eux; \
 		arm64 | aarch64)       ARCH='aarch64' ;; \
 		armhf | armel | armv*) ARCH='arm'     ;; \
 		i386  | x86)           ARCH='i386'    ;; \
-		mips*)                 ARCH='mips'    ;; \
 		ppc*)                  ARCH='powerpc' ;; \
 		riscv64)               ARCH='riscv64' ;; \
 		s390x)                 ARCH='s390'    ;; \

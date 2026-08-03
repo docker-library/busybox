@@ -141,17 +141,6 @@ RUN set -eux; \
 			"; \
 			;; \
 			\
-		mips64el) \
-			setConfs="$setConfs \
-				BR2_mips64el=y \
-				BR2_mips_64r2=y \
-				BR2_MIPS_NABI64=y \
-			"; \
-			unsetConfs="$unsetConfs \
-				BR2_MIPS_SOFT_FLOAT \
-			"; \
-			;; \
-			\
 # TODO ppc64el ? (needs BR2_TOOLCHAIN_BUILDROOT_UCLIBC support)
 			\
 		riscv64) \
