@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM debian:trixie-slim
+FROM arm32v7/debian:trixie-slim
 
 RUN set -eux; \
 	apt-get install --update -y \
