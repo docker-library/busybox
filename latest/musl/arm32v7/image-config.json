@@ -11,7 +11,7 @@
 	"history": [
 		{
 			"created": "2026-05-13T02:21:49Z",
-			"created_by": "BusyBox 1.38.0 (musl), Alpine 3.23.5"
+			"created_by": "BusyBox 1.38.0 (musl), Alpine 3.23.6"
 		}
 	],
 	"rootfs": {
