@@ -77,6 +77,9 @@ RUN set -eux; \
 # https://git.busybox.net/busybox/tree/miscutils/inotifyd.c?id=6937487be73cd4563b876413277a295a5fe2f32c#n31
 # "default n  # doesn't build on Knoppix 5" 😅😂
 		CONFIG_INOTIFYD=y \
+		\
+# vi-style line editing ("set -o vi")
+		CONFIG_FEATURE_EDITING_VI=y \
 	'; \
 	\
 	unsetConfs=' \
