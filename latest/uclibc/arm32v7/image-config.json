@@ -11,13 +11,13 @@
 	"history": [
 		{
 			"created": "2026-05-13T02:21:49Z",
-			"created_by": "BusyBox 1.38.0 (uclibc), Buildroot 2026.08, Debian 13"
+			"created_by": "BusyBox 1.38.0 (uclibc), Buildroot 2026.08.1, Debian 13"
 		}
 	],
 	"rootfs": {
 		"type": "layers",
 		"diff_ids": [
-			"sha256:9109df5533ff33c5acf2273178eedbc50fca956b52bf091c0c2516389999c99a"
+			"sha256:e7c4873d838b0df4b9033eb4a56ac1f384b4a61357bf0363b4200b22d60ffb7d"
 		]
 	},
 	"architecture": "arm",
