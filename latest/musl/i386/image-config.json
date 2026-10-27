@@ -11,13 +11,13 @@
 	"history": [
 		{
 			"created": "2026-05-13T02:21:49Z",
-			"created_by": "BusyBox 1.38.0 (musl), Alpine 3.23.6"
+			"created_by": "BusyBox 1.38.0 (musl), Alpine 3.23.7"
 		}
 	],
 	"rootfs": {
 		"type": "layers",
 		"diff_ids": [
-			"sha256:7a38d14560059bdeb4325317d9adeb0b668ad2e29628500d7df6171511f9827e"
+			"sha256:5c6ae117bc404703276c4f80d6b33e0882272fbd9e46a37dc599115ae2dca1da"
 		]
 	},
 	"architecture": "386",
