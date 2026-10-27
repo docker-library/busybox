@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM debian:trixie-slim
+FROM s390x/debian:trixie-slim
 
 RUN set -eux; \
 	apt-get install --update -y \
